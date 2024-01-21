@@ -2,7 +2,7 @@ import random
 import numpy as np
 
 # Using NumPy
-matrix = np.full((7, 7), '', dtype='<U2')  # Initialize with empty strings
+matrix = np.full((7, 7), '', dtype='<U3')  # Initialize with empty strings
 
 def prepare_pack():
     suits = ['H', 'D', 'C', 'S']
@@ -25,7 +25,8 @@ def deal_cards(deck):
         for j in range(7):
             # Pop a card from the deck and assign its string representation to the matrix element
             card = deck.pop(0)
-            matrix[i, j] = f"{card['rank']}{card['suit']}"
+            print(card)
+            matrix[i, j] = str(card['rank'])+str(card['suit'])
 
 # Example usage:
 deck = prepare_pack()
