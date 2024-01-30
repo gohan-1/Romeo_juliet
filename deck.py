@@ -4,8 +4,8 @@ from card import Card
 
 class Deck:
     def __init__(self):
-        self.MATRIX_SIZE = 7
-        self.cards = self.prepare_pack()
+
+        self.cards: list[Card] = self.prepare_pack()
         self.shuffle()
 
     def shuffle(self):
@@ -20,3 +20,4 @@ class Deck:
         cards.append(Card('Joker', 0))
         cards.append(Card('Joker', 0))
         cards.append(Card('Joker', 0))
+        return cards

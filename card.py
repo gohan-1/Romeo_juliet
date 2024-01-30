@@ -10,6 +10,8 @@ class Card:
             suit = 'JK'
         if rank == 1:
             rank = 'A'
+        elif rank == 10:
+            rank = 'X'
         elif rank == 11:
             rank = 'J'
         elif rank == 12:
@@ -18,4 +20,13 @@ class Card:
             rank = 'K'
         elif rank == 0:
             rank = ''
-        return f"{self.rank}{self.suit}"
+        return f"{rank}{suit}"
+
+    def is_heart_queen(self):
+        return self.suit == 'H' and self.rank == 12
+
+    def is_spade_queen(self):
+        return self.suit == 'S' and self.rank == 12
+
+    def is_joker(self):
+        return self.suit == 'Joker'
