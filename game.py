@@ -22,12 +22,10 @@ class Game:
         for i in range(self.MATRIX_SIZE):
             for j in range(self.MATRIX_SIZE):
                 if self.board[i][j].is_heart_queen():
-                    print(i, j, self.board[i][j])
                     temp = self.board[0][self.MATRIX_SIZE-1]
                     self.board[0][self.MATRIX_SIZE-1] = self.board[i][j]
                     self.board[i][j] = temp
                 elif self.board[i][j].is_spade_queen():
-                    print(i, j, self.board[i][j])
                     temp = self.board[self.MATRIX_SIZE-1][0]
                     self.board[self.MATRIX_SIZE-1][0] = self.board[i][j]
                     self.board[i][j] = temp
@@ -52,3 +50,9 @@ class Game:
                     card_text = text_with_blue_background(
                         card_text)
                 print(card_text, end='')
+
+    def move(self):
+        pass
+
+    def swap(self):
+        pass
