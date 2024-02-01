@@ -8,6 +8,8 @@ class Game:
         self.deck = deck or Deck()
         self.board = self.init_board()
         self.swap_queens()
+       
+        
 
     def init_board(self):
         board = [[None]*self.MATRIX_SIZE for _ in range(self.MATRIX_SIZE)]
@@ -55,4 +57,36 @@ class Game:
         pass
 
     def swap(self):
-        pass
+        print('started')
+        previous_swap_index = [[0,6],[6,0]]
+        jokers=[]
+        for i in range(self.MATRIX_SIZE):
+            for j in range(self.MATRIX_SIZE):
+                if (self.board[i][j].is_joker() and [i, j] not in previous_swap_index):
+                    jokers.append([i,j])
+        
+        print(f'You have {len(jokers)} jokers to swap whicher ')
+        # joker = [joker for joker in jokers]
+        for index,value in enumerate(jokers):
+            print(f' {index} with position {value} ')
+        selected = int(input('choose one of the joker'))
+        print('choose teh card')
+        selected = int(input(' choose the row value'))
+        selected = int(input('choose the coumn value'))
+
+
+
+        
+
+
+    def create_prompt(self):
+        print(' \n Choose the move ')
+        print(' 1 for swap ')
+        print(' 2 for move ')
+
+    def choose_option(self):
+        option = int(input(' Please Enter the choice '))
+        if (option == 1 ):
+            self.swap()
+        else:
+            self.move()
