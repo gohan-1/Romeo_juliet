@@ -10,5 +10,5 @@ def nominate_colors():
 if __name__ == "__main__":
     game = Game()
     game.print_board()
-    game.create_prompt()
-    game.choose_option()
+    game.start_prompt()
+    # game.choose_option()

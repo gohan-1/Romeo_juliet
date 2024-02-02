@@ -1,7 +1,10 @@
 from deck import Deck
 from helpers import green_text, text_with_blue_background, text_with_red_background
+import sys
 
+from  position import Position
 
+from player import Player
 class Game:
     def __init__(self, deck: Deck = None) -> None:
         self.MATRIX_SIZE = 7
@@ -79,10 +82,47 @@ class Game:
         
 
 
-    def create_prompt(self):
-        print(' \n Choose the move ')
-        print(' 1 for swap ')
-        print(' 2 for move ')
+    def move_prompt(self):
+        print(' \n\n Choose the  option ')
+        print('\n1 for swap ')
+        print(' \n2 for move ')
+
+    def start_prompt(self):
+        self.flag = True
+        while self.flag:
+
+            print('\n\nPlaying Romeo game')
+
+            print(" \n\n1. play")
+            print(" \n2. Reset Game")
+            print(" \n3. Quit")
+            choice =int(input("Enter your choice (1/2/3): "))
+
+            if choice == 1:
+                self.print_board()
+                # board = self.move_prompt()
+                red_pl_name  = input('\nPlease enter  red Player  name ')
+                p1 = Position(0,6)
+                red_player =Player('RED',p1,red_pl_name)
+                black_pl_name  = input('\nPlease enter black Player  name ')
+                p2  = Position(6,0)
+                Player('Black',p2,black_pl_name)
+                
+                self.move_prompt()
+                self.flag=False
+            elif choice == 2:
+                self.deck = Deck()
+                self.board = self.init_board()
+                self.swap_queens()
+                self.print_board()
+            
+            elif choice == 3:
+                print("Exiting the game. Goodbye!")
+                sys.exit()
+            else:
+                print("Invalid choice. Please enter 1, 2, or 3.")
+                sys.exit()
+
 
     def choose_option(self):
         option = int(input(' Please Enter the choice '))
@@ -90,3 +130,4 @@ class Game:
             self.swap()
         else:
             self.move()
+        
