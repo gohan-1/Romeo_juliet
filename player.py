@@ -10,10 +10,9 @@ class PlayerType(Enum):
 
 class Player:
     def __init__(self, color: PlayerType,
-                 position: Position = Position(0, 0),
-                 name: str = "Player") -> None:
+                 position: Position,
+                 name: str = "") -> None:
 
         self.color = color
         self.position: Position = position
-        self.name = name
-        
+        self.name = name or color.name

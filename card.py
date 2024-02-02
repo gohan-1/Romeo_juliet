@@ -30,3 +30,15 @@ class Card:
 
     def is_joker(self):
         return self.suit == 'Joker'
+
+    def is_red_numeral(self):
+        return self.suit in ['H', 'D'] and self.rank < 10
+
+    def is_black_numeral(self):
+        return self.suit in ['S', 'C'] and self.rank < 10
+
+    def is_king(self):
+        return self.rank == 13
+
+    def is_jack(self):
+        return self.rank == 11
