@@ -62,7 +62,7 @@ class Game:
         for i in range(self.MATRIX_SIZE):
             for j in range(self.MATRIX_SIZE):
                 if (self.board[i][j].is_joker() and [i, j] not in previous_swap_index):
-                    jokers.append([i,j])
+                    jokers.append([i+1,j+1])
         
         print(f'You have {len(jokers)} jokers to swap whicher ')
         # joker = [joker for joker in jokers]
@@ -75,12 +75,14 @@ class Game:
         selected_row = int(input(' choose the row value'))
         selected_column = int(input('choose the coumn value'))
         
-        self.board[selected_joker_position[0]][selected_joker_position[1]], \
-        self.board[selected_row][selected_column] = \
-        self.board[selected_row][selected_column], \
-        self.board[selected_joker_position[0]][selected_joker_position[1]]
+        self.board[selected_joker_position[0] - 1][selected_joker_position[1] - 1], \
+    self.board[selected_row - 1][selected_column - 1] = \
+    self.board[selected_row - 1][selected_column - 1], \
+    self.board[selected_joker_position[0] - 1][selected_joker_position[1] - 1]
+        
+        previous_swap_index = [[selected_row,selected_column],[selected_joker_position[0],[selected_joker_position[1]]]]
 
-
+        print(previous_swap_index)
 
         
 
