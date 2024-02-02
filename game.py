@@ -2,9 +2,6 @@ from deck import Deck
 from helpers import green_text, text_with_blue_background, text_with_red_background
 import sys
 
-from  position import Position
-
-from player import Player
 class Game:
     def __init__(self, deck: Deck = None) -> None:
         self.MATRIX_SIZE = 7
@@ -60,7 +57,6 @@ class Game:
         pass
 
     def swap(self):
-        print('started')
         previous_swap_index = [[0,6],[6,0]]
         jokers=[]
         for i in range(self.MATRIX_SIZE):
@@ -71,11 +67,18 @@ class Game:
         print(f'You have {len(jokers)} jokers to swap whicher ')
         # joker = [joker for joker in jokers]
         for index,value in enumerate(jokers):
-            print(f' {index} with position {value} ')
-        selected = int(input('choose one of the joker'))
+            print(f' {index+1} with position {value} ')
+        selected_joker = int(input('choose one of the joker'))
         print('choose teh card')
-        selected = int(input(' choose the row value'))
-        selected = int(input('choose the coumn value'))
+        selected_joker_position = jokers[selected_joker - 1]
+
+        selected_row = int(input(' choose the row value'))
+        selected_column = int(input('choose the coumn value'))
+        
+        self.board[selected_joker_position[0]][selected_joker_position[1]], \
+        self.board[selected_row][selected_column] = \
+        self.board[selected_row][selected_column], \
+        self.board[selected_joker_position[0]][selected_joker_position[1]]
 
 
 
@@ -101,14 +104,7 @@ class Game:
             if choice == 1:
                 self.print_board()
                 # board = self.move_prompt()
-                red_pl_name  = input('\nPlease enter  red Player  name ')
-                p1 = Position(0,6)
-                red_player =Player('RED',p1,red_pl_name)
-                black_pl_name  = input('\nPlease enter black Player  name ')
-                p2  = Position(6,0)
-                Player('Black',p2,black_pl_name)
-                
-                self.move_prompt()
+               
                 self.flag=False
             elif choice == 2:
                 self.deck = Deck()
@@ -124,10 +120,11 @@ class Game:
                 sys.exit()
 
 
-    def choose_option(self):
-        option = int(input(' Please Enter the choice '))
+    def choose_mv_option(self):
+        option = int(input('\nPlease Enter the choice '))
         if (option == 1 ):
             self.swap()
+            self.print_board()
         else:
             self.move()
         
