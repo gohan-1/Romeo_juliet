@@ -22,6 +22,8 @@ class Game:
         self.red_player = Player(PlayerType.RED, position=Position(6, 0))
         self.black_player = Player(PlayerType.BLACK, position=Position(0, 6))
         self.current_player = self.red_player
+        self.previous_swap_index = [[0, 6], [6, 0]]
+
 
     def init_board(self):
         board = [[None]*self.MATRIX_SIZE for _ in range(self.MATRIX_SIZE)]
@@ -133,34 +135,65 @@ class Game:
         self.black_player.name = black_name
 
     def swap(self):
-        previous_swap_index = [[0, 6], [6, 0]]
         jokers = []
         for i in range(self.MATRIX_SIZE):
             for j in range(self.MATRIX_SIZE):
-                if (self.board[i][j].is_joker() and [i, j] not in previous_swap_index):
+                if (self.board[i][j].is_joker() and [i, j]):
                     jokers.append([i+1, j+1])
 
-        print(f'You have {len(jokers)} jokers to swap whicher ')
+        print(f'You have {len(jokers)} jokers to swap which are given below  ')
         # joker = [joker for joker in jokers]
         for index, value in enumerate(jokers):
             print(f' {index+1} with position {value} ')
-        selected_joker = int(input('choose one of the joker'))
-        print('choose teh card')
+        selected_joker = int(input(' \n choose one of the joker'))
+        print('Now select the card')
         selected_joker_position = jokers[selected_joker - 1]
 
-        selected_row = int(input(' choose the row value'))
-        selected_column = int(input('choose the coumn value'))
 
-        self.board[selected_joker_position[0] - 1][selected_joker_position[1] - 1], \
-            self.board[selected_row - 1][selected_column - 1] = \
-            self.board[selected_row - 1][selected_column - 1], \
+        selected_value = input(' \n please Enter the card value you want swap with: ')
+
+        selected_suit = input(' \n please Enter the suit you want swap with :').upper()
+     
+        if selected_value == 'a' or selected_value == 'A':
+            card_value = 1
+        elif selected_value == 'k' or selected_value == 'K':
+            card_value = 13
+        elif selected_value == 'j' or selected_value == 'J':
+            card_value = 11
+        elif 0<int(selected_value)<11 :
+            card_value =int(selected_value)
+        else:
+            print('Invalid card given please recheck it')
+
+
+        for i in range(self.MATRIX_SIZE):
+            for j in range(self.MATRIX_SIZE):
+                if self.board[i][j].suit== selected_suit and self.board[i][j].rank == card_value:
+                    self.row_index = i
+                    self.column_index =j
+
+        
+        # print(self.previous_swap_index[0])
+        # print([selected_joker_position[0],selected_joker_position[1]])
+        # print( self.previous_swap_index[0] == [selected_joker_position[0],selected_joker_position[1]] )
+
+        print(self.row_index +1,self.column_index+1)
+        print(selected_joker_position[0],selected_joker_position[1])
+
+        if [selected_joker_position[0],selected_joker_position[1]] in self.previous_swap_index or  [self.row_index +1,self.column_index +1]  in self.previous_swap_index :
+            print('************************************************************************')
+            print('* cards are used in previous swap, Please choose another cards to swap *')
+            print('************************************************************************')
+
+        else:self.board[selected_joker_position[0] - 1][selected_joker_position[1] - 1], \
+            self.board[self.row_index][self.column_index] = \
+            self.board[self.row_index][self.column_index], \
             self.board[selected_joker_position[0] -
                        1][selected_joker_position[1] - 1]
 
-        previous_swap_index = [[selected_row, selected_column], [
-            selected_joker_position[0], [selected_joker_position[1]]]]
+        self.previous_swap_index = [[self.row_index +1, self.column_index+1], [selected_joker_position[0], selected_joker_position[1]]]
 
-        print(previous_swap_index)
+   
 
     def turn_prompt(self) -> TurnType:
         while True:
