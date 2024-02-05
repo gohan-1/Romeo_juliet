@@ -43,6 +43,20 @@ class Game:
                     temp = self.board[self.MATRIX_SIZE-1][0]
                     self.board[self.MATRIX_SIZE-1][0] = self.board[i][j]
                     self.board[i][j] = temp
+                
+    def is_red(self):
+        if self.current_player == self.red_player:
+            return True
+        else:
+            return False
+        
+
+    def toggle_players(self):
+        if (self.is_red()):
+            self.current_player = self.black_player 
+        else:
+            self.current_player = self.red_player
+
 
     def print_board(self):
         WIDTH = 3
@@ -75,6 +89,7 @@ class Game:
                 self.move()
             elif option == TurnType.SWAP:
                 self.swap()
+            self.toggle_players()
 
     def move(self):
         print('Please choose your desire position')
@@ -155,3 +170,8 @@ class Game:
             choice = int(input('Your choice: '))
             if choice == 1 or choice == 2:
                 return TurnType(choice)
+            toggle_players()
+
+   
+
+
