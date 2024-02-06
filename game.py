@@ -1,7 +1,6 @@
 from enum import Enum
 from deck import Deck
 from helpers import green_text, text_with_blue_background, text_with_red_background
-import sys
 
 from player import Player, PlayerType
 from position import Position
@@ -24,7 +23,6 @@ class Game:
         self.current_player = self.red_player
         self.previous_swap_index = [[0, 6], [6, 0]]
 
-
     def init_board(self):
         board = [[None]*self.MATRIX_SIZE for _ in range(self.MATRIX_SIZE)]
         x = 0
@@ -45,20 +43,18 @@ class Game:
                     temp = self.board[self.MATRIX_SIZE-1][0]
                     self.board[self.MATRIX_SIZE-1][0] = self.board[i][j]
                     self.board[i][j] = temp
-                
+
     def is_red(self):
         if self.current_player == self.red_player:
             return True
         else:
             return False
-        
 
     def toggle_players(self):
         if (self.is_red()):
-            self.current_player = self.black_player 
+            self.current_player = self.black_player
         else:
             self.current_player = self.red_player
-
 
     def print_board(self):
         WIDTH = 3
@@ -73,12 +69,10 @@ class Game:
                 card_text: str = str(self.board[i][j]).center(WIDTH)
                 if card.is_joker():
                     card_text = green_text(card_text)
-                elif card.is_heart_queen():
-                    card_text = text_with_red_background(
-                        card_text)
-                elif card.is_spade_queen():
-                    card_text = text_with_blue_background(
-                        card_text)
+                if i == self.red_player.position.x and j == self.red_player.position.y:
+                    card_text = text_with_red_background(card_text)
+                elif i == self.black_player.position.x and j == self.black_player.position.y:
+                    card_text = text_with_blue_background(card_text)
                 print(card_text, end='')
         print("\n")
 
@@ -113,10 +107,34 @@ class Game:
         elif current_card.is_joker():
             pass
         elif current_card.is_jack():
-            pass
+            return self.get_valid_jack_moves(position)
         elif current_card.is_king():
-            pass
+            return self.get_valid_king_moves(position)
+        elif current_card.is_queen():
+            return self.get_valid_king_moves(position)
         return []
+
+    def get_valid_jack_moves(self, current_position) -> list[Position]:
+        jack_moves = [(-1, 2), (1, 2), (2, 1), (2, -1),
+                      (1, -2), (-1, -2), (-2, -1), (-2, 1)]
+        valid_moves = []
+        for move in jack_moves:
+            new_x = current_position.x + move[0]
+            new_y = current_position.y + move[1]
+            if new_x >= 0 and new_x < self.MATRIX_SIZE and new_y >= 0 and new_y < self.MATRIX_SIZE:
+                valid_moves.append(Position(new_x, new_y))
+        return valid_moves
+
+    def get_valid_king_moves(self, current_position) -> list[Position]:
+        king_moves = [(-1, 0), (-1, 1), (0, 1), (1, 1),
+                      (1, 0), (1, -1), (0, -1), (-1, -1)]
+        valid_moves = []
+        for move in king_moves:
+            new_x = current_position.x + move[0]
+            new_y = current_position.y + move[1]
+            if new_x >= 0 and new_x < self.MATRIX_SIZE and new_y >= 0 and new_y < self.MATRIX_SIZE:
+                valid_moves.append(Position(new_x, new_y))
+        return valid_moves
 
     def update_current_player_position(self, new_position):
         self.current_player.position = new_position
@@ -149,51 +167,53 @@ class Game:
         print('Now select the card')
         selected_joker_position = jokers[selected_joker - 1]
 
+        selected_value = input(
+            ' \n please Enter the card value you want swap with: ')
 
-        selected_value = input(' \n please Enter the card value you want swap with: ')
+        selected_suit = input(
+            ' \n please Enter the suit you want swap with :').upper()
 
-        selected_suit = input(' \n please Enter the suit you want swap with :').upper()
-     
         if selected_value == 'a' or selected_value == 'A':
             card_value = 1
         elif selected_value == 'k' or selected_value == 'K':
             card_value = 13
         elif selected_value == 'j' or selected_value == 'J':
             card_value = 11
-        elif 0<int(selected_value)<11 :
-            card_value =int(selected_value)
+        elif 0 < int(selected_value) < 11:
+            card_value = int(selected_value)
         else:
             print('Invalid card given please recheck it')
 
-
         for i in range(self.MATRIX_SIZE):
             for j in range(self.MATRIX_SIZE):
-                if self.board[i][j].suit== selected_suit and self.board[i][j].rank == card_value:
+                if self.board[i][j].suit == selected_suit and self.board[i][j].rank == card_value:
                     self.row_index = i
-                    self.column_index =j
+                    self.column_index = j
 
-        
         # print(self.previous_swap_index[0])
         # print([selected_joker_position[0],selected_joker_position[1]])
         # print( self.previous_swap_index[0] == [selected_joker_position[0],selected_joker_position[1]] )
 
-        print(self.row_index +1,self.column_index+1)
-        print(selected_joker_position[0],selected_joker_position[1])
+        print(self.row_index + 1, self.column_index+1)
+        print(selected_joker_position[0], selected_joker_position[1])
 
-        if [selected_joker_position[0],selected_joker_position[1]] in self.previous_swap_index or  [self.row_index +1,self.column_index +1]  in self.previous_swap_index :
-            print('************************************************************************')
-            print('* cards are used in previous swap, Please choose another cards to swap *')
-            print('************************************************************************')
+        if [selected_joker_position[0], selected_joker_position[1]] in self.previous_swap_index or [self.row_index + 1, self.column_index + 1] in self.previous_swap_index:
+            print(
+                '************************************************************************')
+            print(
+                '* cards are used in previous swap, Please choose another cards to swap *')
+            print(
+                '************************************************************************')
 
-        else:self.board[selected_joker_position[0] - 1][selected_joker_position[1] - 1], \
-            self.board[self.row_index][self.column_index] = \
-            self.board[self.row_index][self.column_index], \
-            self.board[selected_joker_position[0] -
-                       1][selected_joker_position[1] - 1]
+        else:
+            self.board[selected_joker_position[0] - 1][selected_joker_position[1] - 1], \
+                self.board[self.row_index][self.column_index] = \
+                self.board[self.row_index][self.column_index], \
+                self.board[selected_joker_position[0] -
+                           1][selected_joker_position[1] - 1]
 
-        self.previous_swap_index = [[self.row_index +1, self.column_index+1], [selected_joker_position[0], selected_joker_position[1]]]
-
-   
+        self.previous_swap_index = [[self.row_index + 1, self.column_index+1], [
+            selected_joker_position[0], selected_joker_position[1]]]
 
     def turn_prompt(self) -> TurnType:
         while True:
@@ -203,8 +223,3 @@ class Game:
             choice = int(input('Your choice: '))
             if choice == 1 or choice == 2:
                 return TurnType(choice)
-            toggle_players()
-
-   
-
-

@@ -42,3 +42,6 @@ class Card:
 
     def is_jack(self):
         return self.rank == 11
+
+    def is_queen(self):
+        return self.rank == 12
