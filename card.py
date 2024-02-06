@@ -1,3 +1,6 @@
+SUIT_MAP = {'S': '♠️', 'H': '♥', 'D': '♦', 'C': '♣', 'Joker': '🃟'}
+
+
 class Card:
     def __init__(self, suit, rank):
         self.suit = suit
@@ -5,7 +8,8 @@ class Card:
 
     def __str__(self):
         rank = self.rank
-        suit = self.suit
+        suit = SUIT_MAP[self.suit]
+
         if suit == 'Joker':
             suit = 'JK'
         if rank == 1:
