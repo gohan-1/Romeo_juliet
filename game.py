@@ -108,7 +108,7 @@ class Game:
         elif current_card.is_black_numeral():
             pass
         elif current_card.is_joker():
-            pass
+            return self.get_valid_jocker_moves(position)
         elif current_card.is_jack():
             return self.get_valid_jack_moves(position)
         elif current_card.is_king():
@@ -155,6 +155,9 @@ class Game:
         black_name = input("Black player's name: ")
         self.black_player.name = black_name
 
+    
+        
+        
     def swap(self):
         jokers = []
         for i in range(self.MATRIX_SIZE):
@@ -183,7 +186,7 @@ class Game:
         elif selected_value == 'j' or selected_value == 'J':
             card_value = 11
         elif selected_value == 'x' or selected_value == 'X':
-            card_value = 11
+            card_value = 10
         elif 0 < int(selected_value) < 10:
             card_value = int(selected_value)
         else:
@@ -228,3 +231,27 @@ class Game:
             choice = int(input('Your choice: '))
             if choice == 1 or choice == 2:
                 return TurnType(choice)
+
+
+    def get_valid_jocker_moves(self,current_position):
+        king_moves = self.get_valid_king_moves(current_position)
+        jack_moves = self.get_valid_jack_moves(current_position)
+        vertical_moves = []
+        horizontal_moves = []
+        for i in range(1 , self.MATRIX_SIZE +1):
+            new_y1 = current_position.y + i
+            new_y2 = current_position.y - i
+            new_x1 = current_position.x + i
+            new_x2 = current_position.x - i
+            if new_y1 >= 0 and new_y1 < self.MATRIX_SIZE:
+                horizontal_moves.append(Position(current_position.x,new_y1))
+            if new_y2 >= 0 and new_y2 < self.MATRIX_SIZE:
+                horizontal_moves.append(Position(current_position.x,new_y2))
+            if new_x1 >= 0 and new_x1 < self.MATRIX_SIZE:
+                vertical_moves.append(Position(new_x1,current_position.y))
+            if new_x2 >= 0 and new_x2 < self.MATRIX_SIZE:
+                vertical_moves.append(Position(new_x2,current_position.y))
+            
+        return vertical_moves + horizontal_moves + king_moves + jack_moves 
+
+            
