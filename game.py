@@ -93,7 +93,7 @@ class Game:
         for i, move in enumerate(possible_moves):
             print(f'{i+1}. {str(move)}')
         selected = int(input('Your option: '))
-        while selected >= len(possible_moves):
+        while selected > len(possible_moves):
             print('Invalid input, please choose listed option')
             selected = int(input('Your option: '))
         self.update_current_player_position(possible_moves[selected-1])
