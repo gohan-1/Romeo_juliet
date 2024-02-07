@@ -93,7 +93,7 @@ class Game:
         for i, move in enumerate(possible_moves):
             print(f'{i+1}. {str(move)}')
         selected = int(input('Your option: '))
-        while selected > len(possible_moves):
+        while selected > len(possible_moves) or selected <= 0:
             print('Invalid input, please choose listed option')
             selected = int(input('Your option: '))
         self.update_current_player_position(possible_moves[selected-1])
@@ -155,14 +155,11 @@ class Game:
         black_name = input("Black player's name: ")
         self.black_player.name = black_name
 
-    
-        
-        
     def swap(self):
         jokers = []
         for i in range(self.MATRIX_SIZE):
             for j in range(self.MATRIX_SIZE):
-                if (self.board[i][j].is_joker() and [i+1, j+1] not in  self.previous_swap_index):
+                if (self.board[i][j].is_joker() and [i+1, j+1] not in self.previous_swap_index):
                     jokers.append([i+1, j+1])
 
         print(f'You have {len(jokers)} jokers to swap which are given below  ')
@@ -205,7 +202,7 @@ class Game:
         print(self.row_index + 1, self.column_index+1)
         print(selected_joker_position[0], selected_joker_position[1])
 
-        if (selected_joker_position[0] == self.row_index + 1 or selected_joker_position[1] == self.column_index+1 ):
+        if (selected_joker_position[0] == self.row_index + 1 or selected_joker_position[1] == self.column_index+1):
             if [selected_joker_position[0], selected_joker_position[1]] in self.previous_swap_index or [self.row_index + 1, self.column_index + 1] in self.previous_swap_index:
                 print(
                     '************************************************************************')
@@ -219,17 +216,17 @@ class Game:
                     self.board[self.row_index][self.column_index] = \
                     self.board[self.row_index][self.column_index], \
                     self.board[selected_joker_position[0] -
-                            1][selected_joker_position[1] - 1]
+                               1][selected_joker_position[1] - 1]
 
             self.previous_swap_index = [[self.row_index + 1, self.column_index+1], [
                 selected_joker_position[0], selected_joker_position[1]]]
         else:
-                print(
-                    '************************************************************************')
-                print(
-                    '* selected card is not same row or column please select another one *')
-                print(
-                    '************************************************************************')
+            print(
+                '************************************************************************')
+            print(
+                '* selected card is not same row or column please select another one *')
+            print(
+                '************************************************************************')
 
     def turn_prompt(self) -> TurnType:
         while True:
@@ -240,26 +237,23 @@ class Game:
             if choice == 1 or choice == 2:
                 return TurnType(choice)
 
-
-    def get_valid_jocker_moves(self,current_position):
+    def get_valid_jocker_moves(self, current_position):
         king_moves = self.get_valid_king_moves(current_position)
         jack_moves = self.get_valid_jack_moves(current_position)
         vertical_moves = []
         horizontal_moves = []
-        for i in range(1 , self.MATRIX_SIZE +1):
+        for i in range(1, self.MATRIX_SIZE + 1):
             new_y1 = current_position.y + i
             new_y2 = current_position.y - i
             new_x1 = current_position.x + i
             new_x2 = current_position.x - i
             if new_y1 >= 0 and new_y1 < self.MATRIX_SIZE:
-                horizontal_moves.append(Position(current_position.x,new_y1))
+                horizontal_moves.append(Position(current_position.x, new_y1))
             if new_y2 >= 0 and new_y2 < self.MATRIX_SIZE:
-                horizontal_moves.append(Position(current_position.x,new_y2))
+                horizontal_moves.append(Position(current_position.x, new_y2))
             if new_x1 >= 0 and new_x1 < self.MATRIX_SIZE:
-                vertical_moves.append(Position(new_x1,current_position.y))
+                vertical_moves.append(Position(new_x1, current_position.y))
             if new_x2 >= 0 and new_x2 < self.MATRIX_SIZE:
-                vertical_moves.append(Position(new_x2,current_position.y))
-            
-        return vertical_moves + horizontal_moves + king_moves + jack_moves 
+                vertical_moves.append(Position(new_x2, current_position.y))
 
-            
+        return vertical_moves + horizontal_moves + king_moves + jack_moves
