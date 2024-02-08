@@ -90,6 +90,7 @@ class Game:
     def move(self):
         print('Please choose your desire position')
         possible_moves = self.list_possible_moves_for_current_player()
+        print(possible_moves)
         for i, move in enumerate(possible_moves):
             print(f'{i+1}. {str(move)}')
         selected = int(input('Your option: '))
@@ -104,9 +105,9 @@ class Game:
         position = self.current_player.position
         current_card = self.board[position.x][position.y]
         if current_card.is_red_numeral():
-            pass
+            return self.get_valid_vertical_moves(current_card,position)
         elif current_card.is_black_numeral():
-            pass
+            return self.get_valid_horizontal_moves(current_card,position)
         elif current_card.is_joker():
             return self.get_valid_jocker_moves(position)
         elif current_card.is_jack():
@@ -139,6 +140,78 @@ class Game:
                 valid_moves.append(Position(new_x, new_y))
         return valid_moves
 
+    def get_valid_horizontal_moves(self,card, current_position) -> list[Position]:
+        card_value = card.rank
+        valid_moves = []
+        print(valid_moves)
+        print(current_position.y)
+        if current_position.y + card_value <self.MATRIX_SIZE:
+            valid_moves.append(Position(current_position.x,current_position.y + card_value))
+        if (current_position.y+1) - card_value > 0:
+            valid_moves.append(Position(current_position.x,current_position.y - card_value))
+        if  (current_position.y+1) + card_value >self.MATRIX_SIZE:
+            
+            reminder = card_value%self.MATRIX_SIZE    
+                
+            padding =  (current_position.y+1)
+            
+            value = (reminder + padding) % self.MATRIX_SIZE
+            if value !=0:
+                valid_moves.append(Position(current_position.x,(value - 1)))
+            else:
+                valid_moves.append(Position(current_position.x,self.MATRIX_SIZE))
+
+
+           
+        if (current_position.y+1) - card_value <= 0:
+            
+            reminder = card_value%self.MATRIX_SIZE
+            
+            padding =current_position.y+1
+            
+            value = abs(reminder - padding)
+            if self.MATRIX_SIZE/2 > padding:
+                print('x')
+                print(value-1)
+                valid_moves.append(Position(current_position.x,self.MATRIX_SIZE -value-1))
+            else:
+                print('y')
+                valid_moves.append(Position(current_position.x,value-1))
+
+        return valid_moves
+
+    def get_valid_vertical_moves(self,card, current_position) -> list[Position]:
+        card_value = card.rank
+        valid_moves = []
+        if current_position.x + card_value <self.MATRIX_SIZE:
+            valid_moves.append(Position(current_position.x + card_value,current_position.y ))
+        if (current_position.x+1) - card_value > 0:
+            valid_moves.append(Position(current_position.x - card_value,current_position.y ))
+        if  (current_position.x+1) + card_value >self.MATRIX_SIZE:
+            
+            reminder = card_value%self.MATRIX_SIZE    
+                
+            padding =  (current_position.x+1)
+            
+            value = (reminder + padding) % self.MATRIX_SIZE
+            
+            valid_moves.append(Position(value - 1),current_position.y)
+           
+        if (current_position.x+1) - card_value <= 0:
+            
+            reminder = card_value%self.MATRIX_SIZE
+            
+            padding =current_position.x+1
+            
+            value = abs(reminder - padding) 
+            if self.MATRIX_SIZE/2 > padding:
+                print('x')
+                print(value-1)
+                valid_moves.append(Position(value-1,current_position.y))
+            else:
+                print()
+                valid_moves.append(Position(self.MATRIX_SIZE -(value-1),current_position.y))
+        return valid_moves
     def update_current_player_position(self, new_position):
         self.current_player.position = new_position
 
