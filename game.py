@@ -175,7 +175,7 @@ class Game:
                 valid_moves.append(Position(current_position.x,current_position.y - (reminder)))
             else:
                 value = abs(reminder - padding)
-                valid_moves.append(Position(current_position.x,self.MATRIX_SIZE - (value-1)))
+                valid_moves.append(Position(current_position.x,self.MATRIX_SIZE - (value+1)))
 
         return valid_moves
 
@@ -213,7 +213,7 @@ class Game:
                 valid_moves.append(Position(current_position.x - (reminder),current_position.y ))
             else:
                 value = abs(reminder - padding)
-                valid_moves.append(Position(self.MATRIX_SIZE - (value-1),current_position.y))
+                valid_moves.append(Position(self.MATRIX_SIZE - (value+1),current_position.y))
         return valid_moves
     def update_current_player_position(self, new_position):
         self.current_player.position = new_position
