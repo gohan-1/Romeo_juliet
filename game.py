@@ -1,6 +1,7 @@
 from enum import Enum
+from card import Card
 from deck import Deck
-from helpers import green_text, text_with_blue_background, text_with_red_background
+from helpers import get_int_input_option, green_text, purple_text, red_text, text_with_blue_background, text_with_red_background
 
 from player import Player, PlayerType
 from position import Position
@@ -78,7 +79,9 @@ class Game:
 
     def play(self):
         while True:
-            print(f'{self.current_player.name} turn')
+            name = text_with_red_background(
+                self.current_player.name) if self.current_player.color == PlayerType.RED else text_with_blue_background(self.current_player.name)
+            print(f'{name} turn')
             self.print_board()
             option = self.turn_prompt()
             if option == TurnType.MOVE:
@@ -90,13 +93,12 @@ class Game:
     def move(self):
         print('Please choose your desire position')
         possible_moves = self.list_possible_moves_for_current_player()
-        print(possible_moves)
         for i, move in enumerate(possible_moves):
-            print(f'{i+1}. {str(move)}')
-        selected = int(input('Your option: '))
+            print(f'{i+1}. {self.board[move.x][move.y]} {str(move)}')
+        selected = get_int_input_option()
         while selected > len(possible_moves) or selected <= 0:
-            print('Invalid input, please choose listed option')
-            selected = int(input('Your option: '))
+            print(red_text('Invalid input, please choose listed option'))
+            selected = get_int_input_option()
         self.update_current_player_position(possible_moves[selected-1])
         self.evaluate_current_player_position()
         self.update_counter()
@@ -105,9 +107,9 @@ class Game:
         position = self.current_player.position
         current_card = self.board[position.x][position.y]
         if current_card.is_red_numeral():
-            return self.get_valid_vertical_moves(current_card,position)
+            return self.get_valid_vertical_moves(current_card, position)
         elif current_card.is_black_numeral():
-            return self.get_valid_horizontal_moves(current_card,position)
+            return self.get_valid_horizontal_moves(current_card, position)
         elif current_card.is_joker():
             return self.get_valid_jocker_moves(position)
         elif current_card.is_jack():
@@ -140,78 +142,84 @@ class Game:
                 valid_moves.append(Position(new_x, new_y))
         return valid_moves
 
-    def get_valid_horizontal_moves(self,card, current_position) -> list[Position]:
+    def get_valid_horizontal_moves(self, card, current_position) -> list[Position]:
         card_value = card.rank
         valid_moves = []
         print(valid_moves)
         print(current_position.y)
-        if current_position.y + card_value <self.MATRIX_SIZE:
-            valid_moves.append(Position(current_position.x,current_position.y + card_value))
+        if current_position.y + card_value < self.MATRIX_SIZE:
+            valid_moves.append(Position(current_position.x,
+                               current_position.y + card_value))
         if (current_position.y+1) - card_value > 0:
-            valid_moves.append(Position(current_position.x,current_position.y - card_value))
-        if  (current_position.y+1) + card_value >self.MATRIX_SIZE:
-            
-            reminder = card_value%self.MATRIX_SIZE    
-                
-            padding =  (current_position.y+1)
-            
+            valid_moves.append(Position(current_position.x,
+                               current_position.y - card_value))
+        if (current_position.y+1) + card_value > self.MATRIX_SIZE:
+
+            reminder = card_value % self.MATRIX_SIZE
+
+            padding = (current_position.y+1)
+
             value = (reminder + padding) % self.MATRIX_SIZE
-            if value !=0:
-                valid_moves.append(Position(current_position.x,(value - 1)))
+            if value != 0:
+                valid_moves.append(Position(current_position.x, (value - 1)))
             else:
-                valid_moves.append(Position(current_position.x,self.MATRIX_SIZE))
+                valid_moves.append(
+                    Position(current_position.x, self.MATRIX_SIZE))
 
-
-           
         if (current_position.y+1) - card_value <= 0:
-            
-            reminder = card_value%self.MATRIX_SIZE
-            
-            padding =current_position.y+1
-            
+
+            reminder = card_value % self.MATRIX_SIZE
+
+            padding = current_position.y+1
+
             value = abs(reminder - padding)
             if self.MATRIX_SIZE/2 > padding:
                 print('x')
                 print(value-1)
-                valid_moves.append(Position(current_position.x,self.MATRIX_SIZE -value-1))
+                valid_moves.append(
+                    Position(current_position.x, self.MATRIX_SIZE - value-1))
             else:
                 print('y')
-                valid_moves.append(Position(current_position.x,value-1))
+                valid_moves.append(Position(current_position.x, value-1))
 
         return valid_moves
 
-    def get_valid_vertical_moves(self,card, current_position) -> list[Position]:
+    def get_valid_vertical_moves(self, card, current_position) -> list[Position]:
         card_value = card.rank
         valid_moves = []
-        if current_position.x + card_value <self.MATRIX_SIZE:
-            valid_moves.append(Position(current_position.x + card_value,current_position.y ))
+        if current_position.x + card_value < self.MATRIX_SIZE:
+            valid_moves.append(
+                Position(current_position.x + card_value, current_position.y))
         if (current_position.x+1) - card_value > 0:
-            valid_moves.append(Position(current_position.x - card_value,current_position.y ))
-        if  (current_position.x+1) + card_value >self.MATRIX_SIZE:
-            
-            reminder = card_value%self.MATRIX_SIZE    
-                
-            padding =  (current_position.x+1)
-            
+            valid_moves.append(
+                Position(current_position.x - card_value, current_position.y))
+        if (current_position.x+1) + card_value > self.MATRIX_SIZE:
+
+            reminder = card_value % self.MATRIX_SIZE
+
+            padding = (current_position.x+1)
+
             value = (reminder + padding) % self.MATRIX_SIZE
-            
-            valid_moves.append(Position(value - 1),current_position.y)
-           
+
+            valid_moves.append(Position(value - 1), current_position.y)
+
         if (current_position.x+1) - card_value <= 0:
-            
-            reminder = card_value%self.MATRIX_SIZE
-            
-            padding =current_position.x+1
-            
-            value = abs(reminder - padding) 
+
+            reminder = card_value % self.MATRIX_SIZE
+
+            padding = current_position.x+1
+
+            value = abs(reminder - padding)
             if self.MATRIX_SIZE/2 > padding:
                 print('x')
                 print(value-1)
-                valid_moves.append(Position(value-1,current_position.y))
+                valid_moves.append(Position(value-1, current_position.y))
             else:
                 print()
-                valid_moves.append(Position(self.MATRIX_SIZE -(value-1),current_position.y))
+                valid_moves.append(
+                    Position(self.MATRIX_SIZE - (value-1), current_position.y))
         return valid_moves
+
     def update_current_player_position(self, new_position):
         self.current_player.position = new_position
 
@@ -236,36 +244,20 @@ class Game:
                     if (self.board[i][j].is_joker() and [i+1, j+1] not in self.previous_swap_index):
                         jokers.append([i+1, j+1])
 
-            print(f'You have {len(jokers)} jokers to swap which are given below  ')
+            print(
+                f'You have {len(jokers)} jokers to swap which are given below')
             # joker = [joker for joker in jokers]
             for index, value in enumerate(jokers):
-                print(f' {index+1} with position {value} ')
-            selected_joker = int(input(' \n choose one of the joker'))
+                print(f'{index+1}. {value}')
+            selected_joker = get_int_input_option()
             print('Now select the card')
             selected_joker_position = jokers[selected_joker - 1]
 
-            selected_value = input(
-                ' \n please Enter the card value you want swap with \n the value should be { A , 1, 2 ,3, 4 , 5, 6, 7, 8, 9, X, J ,K  } :')
-
-            selected_suit = input(
-                ' \n please Enter the suit you want swap with \n { Heart as H , Clubs as C, Spade as S, Diamond as D } :').upper()
-
-            if selected_value == 'a' or selected_value == 'A':
-                card_value = 1
-            elif selected_value == 'k' or selected_value == 'K':
-                card_value = 13
-            elif selected_value == 'j' or selected_value == 'J':
-                card_value = 11
-            elif selected_value == 'x' or selected_value == 'X':
-                card_value = 10
-            elif 0 < int(selected_value) < 10:
-                card_value = int(selected_value)
-            else:
-                print('Invalid card given please recheck it')
+            selected_rank, selected_suit = self.select_card()
 
             for i in range(self.MATRIX_SIZE):
                 for j in range(self.MATRIX_SIZE):
-                    if self.board[i][j].suit == selected_suit and self.board[i][j].rank == card_value:
+                    if self.board[i][j].suit == selected_suit and self.board[i][j].rank == selected_rank:
                         self.row_index = i
                         self.column_index = j
 
@@ -290,7 +282,7 @@ class Game:
                         self.board[self.row_index][self.column_index] = \
                         self.board[self.row_index][self.column_index], \
                         self.board[selected_joker_position[0] -
-                                1][selected_joker_position[1] - 1]
+                                   1][selected_joker_position[1] - 1]
 
                 self.previous_swap_index = [[self.row_index + 1, self.column_index+1], [
                     selected_joker_position[0], selected_joker_position[1]]]
@@ -303,12 +295,40 @@ class Game:
                 print(
                     '************************************************************************')
 
+    def select_card(self):
+        while True:
+            print(purple_text('Choose the card you want to swap with'))
+            selected_rank = input(
+                'Rank {A, 2, 3, 4, 5, 6, 7, 8, 9, X, J, K}: ')
+
+            if selected_rank == 'a' or selected_rank == 'A':
+                card_value = 1
+            elif selected_rank == 'k' or selected_rank == 'K':
+                card_value = 13
+            elif selected_rank == 'j' or selected_rank == 'J':
+                card_value = 11
+            elif selected_rank == 'x' or selected_rank == 'X':
+                card_value = 10
+            else:
+                if type(selected_rank) != int and not selected_rank.isdigit():
+                    print(red_text('Invalid rank'))
+                    continue
+                card_value = int(selected_rank)
+
+            selected_suit = input(
+                'Suit {Heart as H, Clubs as C, Spade as S, Diamond as D}: ').upper()
+
+            if selected_suit not in ['H', 'C', 'S', 'D']:
+                print(red_text('Invalid suit'))
+                continue
+            return card_value, selected_suit
+
     def turn_prompt(self) -> TurnType:
         while True:
-            print("What step would you take in this turn?")
+            print(purple_text("What step would you take in this turn?"))
             print('1. Move my Romeo')
             print('2. Swap the Joker')
-            choice = int(input('Your choice: '))
+            choice = get_int_input_option()
             if choice == 1 or choice == 2:
                 return TurnType(choice)
 
