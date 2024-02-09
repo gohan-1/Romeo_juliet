@@ -225,7 +225,7 @@ class Game:
 
             reminder = card_value % self.MATRIX_SIZE
 
-            padding = current_position.y + 1
+            padding = current_position.x + 1
 
             value = abs(reminder - padding)
             if padding > reminder:
