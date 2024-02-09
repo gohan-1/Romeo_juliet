@@ -94,11 +94,11 @@ class Game:
             self.toggle_players()
 
     def move(self):
-        print('Please choose your desire position')
+        print('Please choose your desired position')
         possible_moves = self.list_possible_moves_for_current_player()
         self.filter_possible_moves_for_current_player(possible_moves)
         for i, move in enumerate(possible_moves):
-            print(f'{i+1}. {self.board[move.x][move.y]} {str(move)}')
+            print(f'{self.board[move.x][move.y]} {str(move)} >>> Press {i + 1} ')
         selected = get_int_input_option()
         while selected > len(possible_moves) or selected <= 0:
             print(red_text('Invalid input, please choose listed option'))
@@ -258,12 +258,12 @@ class Game:
                         jokers.append([i+1, j+1])
 
             print(
-                f'You have {len(jokers)} jokers to swap which are given below')
+                f'You have {len(jokers)} jokers to swap which are given below: ')
             # joker = [joker for joker in jokers]
             for index, value in enumerate(jokers):
-                print(f'{index+1}. {value}')
+                print(f' {value} >>> Press {index + 1}')
             selected_joker = get_int_input_option()
-            print('Now select the card')
+            print('Now select the card the card you want to swap. ')
             selected_joker_position = jokers[selected_joker - 1]
 
             selected_rank, selected_suit = self.select_card()
@@ -286,7 +286,7 @@ class Game:
                     print(
                         '************************************************************************')
                     print(
-                        '* cards are used in previous swap, Please choose another cards to swap *')
+                        '* This Card was used in the previous swap, Please choose another card to swap *')
                     print(
                         '************************************************************************')
 
@@ -304,13 +304,13 @@ class Game:
                 print(
                     '************************************************************************')
                 print(
-                    '* selected card is not same row or column please select another one *')
+                    '* Selected card is not from the same row or column please select another card *')
                 print(
                     '************************************************************************')
 
     def select_card(self):
         while True:
-            print(purple_text('Choose the card you want to swap with'))
+            print(purple_text('Choose the card you want to swap the Joker with: '))
             selected_rank = input(
                 'Rank {A, 2, 3, 4, 5, 6, 7, 8, 9, X, J, K}: ')
 
@@ -339,8 +339,8 @@ class Game:
     def turn_prompt(self) -> TurnType:
         while True:
             print(purple_text("What step would you take in this turn?"))
-            print('1. Move my Romeo')
-            print('2. Swap the Joker')
+            print('Move my Romeo >>> Press 1')
+            print('Swap the Joker >>> Press 2')
             choice = get_int_input_option()
             if choice == 1 or choice == 2:
                 return TurnType(choice)
