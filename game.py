@@ -15,11 +15,14 @@ class TurnType(Enum):
 class Game:
     def __init__(self, deck: Deck = None) -> None:
         self.MATRIX_SIZE = 7
+        self.RED_INITAL_POSTION = Position(6, 0)
+        self.BLACK_INITIAL_POSITION = Position(0, 6)
         self.deck = deck or Deck()
         self.board = self.init_board()
         self.swap_queens()
 
-        self.red_player = Player(PlayerType.RED, position=Position(6, 0))
+        self.red_player = Player(
+            PlayerType.RED, position=self.RED_INITAL_POSTION)
         self.black_player = Player(PlayerType.BLACK, position=Position(0, 6))
         self.current_player = self.red_player
         self.previous_swap_index = [[0, 6], [6, 0]]
@@ -93,6 +96,7 @@ class Game:
     def move(self):
         print('Please choose your desire position')
         possible_moves = self.list_possible_moves_for_current_player()
+        self.filter_possible_moves_for_current_player(possible_moves)
         for i, move in enumerate(possible_moves):
             print(f'{i+1}. {self.board[move.x][move.y]} {str(move)}')
         selected = get_int_input_option()
@@ -120,6 +124,13 @@ class Game:
             return self.get_valid_king_moves(position)
         return []
 
+    def filter_possible_moves_for_current_player(self, possible_moves):
+        # filter queen
+        # opponent = self.black_player if self.current_player == self.red_player or self.red_player
+        # winning
+        # possible_moves = filter(lambda a: a.x!=
+        pass
+
     def get_valid_jack_moves(self, current_position) -> list[Position]:
         jack_moves = [(-1, 2), (1, 2), (2, 1), (2, -1),
                       (1, -2), (-1, -2), (-2, -1), (-2, 1)]
@@ -142,83 +153,86 @@ class Game:
                 valid_moves.append(Position(new_x, new_y))
         return valid_moves
 
-    def get_valid_horizontal_moves(self,card, current_position) -> list[Position]:
+    def get_valid_horizontal_moves(self, card, current_position) -> list[Position]:
         card_value = card.rank
         valid_moves = []
-        print(current_position.y)
-        print(card_value)
-        if current_position.y + card_value <self.MATRIX_SIZE:
-            valid_moves.append(Position(current_position.x,current_position.y + card_value))
+        if current_position.y + card_value < self.MATRIX_SIZE:
+            valid_moves.append(Position(current_position.x,
+                               current_position.y + card_value))
         if (current_position.y+1) - card_value > 0:
-            valid_moves.append(Position(current_position.x,current_position.y - card_value))
-        if  (current_position.y+1) + card_value >self.MATRIX_SIZE:
-            
-            reminder = card_value%self.MATRIX_SIZE    
-                
-            padding =  (current_position.y+1)
-            
+            valid_moves.append(Position(current_position.x,
+                               current_position.y - card_value))
+        if (current_position.y+1) + card_value > self.MATRIX_SIZE:
+
+            reminder = card_value % self.MATRIX_SIZE
+
+            padding = (current_position.y+1)
+
             value = (reminder + padding) % self.MATRIX_SIZE
-            if value !=0:
-                valid_moves.append(Position(current_position.x,(value - 1)))
+            if value != 0:
+                valid_moves.append(Position(current_position.x, (value - 1)))
             else:
-                valid_moves.append(Position(current_position.x,self.MATRIX_SIZE))
+                valid_moves.append(
+                    Position(current_position.x, self.MATRIX_SIZE))
 
-
-           
         if (current_position.y+1) - card_value <= 0:
-            
-            reminder = card_value%self.MATRIX_SIZE
-            
-            padding =current_position.y + 1
-            
+
+            reminder = card_value % self.MATRIX_SIZE
+
+            padding = current_position.y + 1
+
             value = abs(reminder - padding)
             if padding > reminder:
-            
-                valid_moves.append(Position(current_position.x,current_position.y - (reminder)))
+
+                valid_moves.append(
+                    Position(current_position.x, current_position.y - (reminder)))
             else:
                 value = abs(reminder - padding)
-                valid_moves.append(Position(current_position.x,self.MATRIX_SIZE - (value+1)))
+                valid_moves.append(
+                    Position(current_position.x, self.MATRIX_SIZE - (value+1)))
 
         return valid_moves
 
-    def get_valid_vertical_moves(self,card, current_position) -> list[Position]:
+    def get_valid_vertical_moves(self, card, current_position) -> list[Position]:
         card_value = card.rank
         valid_moves = []
-        print(current_position.x)
-        print(card_value)
-        if current_position.x + card_value <self.MATRIX_SIZE:
-            valid_moves.append(Position(current_position.x + card_value,current_position.y ))
+        if current_position.x + card_value < self.MATRIX_SIZE:
+            valid_moves.append(
+                Position(current_position.x + card_value, current_position.y))
         if (current_position.x+1) - card_value > 0:
-            valid_moves.append(Position(current_position.x - card_value,current_position.y ))
-        if  (current_position.x+1) + card_value >self.MATRIX_SIZE:
-            
-            reminder = card_value%self.MATRIX_SIZE    
-                
-            padding =  (current_position.x+1)
-            
+            valid_moves.append(
+                Position(current_position.x - card_value, current_position.y))
+        if (current_position.x+1) + card_value > self.MATRIX_SIZE:
+
+            reminder = card_value % self.MATRIX_SIZE
+
+            padding = (current_position.x+1)
+
             value = (reminder + padding) % self.MATRIX_SIZE
 
-            if value !=0:
-                valid_moves.append(Position((value - 1),current_position.y))
+            if value != 0:
+                valid_moves.append(Position((value - 1), current_position.y))
             else:
-                valid_moves.append(Position(self.MATRIX_SIZE,current_position.x))
-            
-           
-           
+                valid_moves.append(
+                    Position(self.MATRIX_SIZE, current_position.x))
+
         if (current_position.x+1) - card_value <= 0:
-            
-            reminder = card_value%self.MATRIX_SIZE
-            
-            padding =current_position.y + 1
-            
+
+            reminder = card_value % self.MATRIX_SIZE
+
+            padding = current_position.y + 1
+
             value = abs(reminder - padding)
             if padding > reminder:
-            
-                valid_moves.append(Position(current_position.x - (reminder),current_position.y ))
+
+                valid_moves.append(
+                    Position(current_position.x - (reminder), current_position.y))
             else:
                 value = abs(reminder - padding)
-                valid_moves.append(Position(self.MATRIX_SIZE - (value+1),current_position.y))
+                valid_moves.append(
+                    Position(self.MATRIX_SIZE - (value+1), current_position.y))
         return valid_moves
+
     def update_current_player_position(self, new_position):
         self.current_player.position = new_position
 
