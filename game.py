@@ -23,7 +23,8 @@ class Game:
 
         self.red_player = Player(
             PlayerType.RED, position=self.RED_INITAL_POSTION)
-        self.black_player = Player(PlayerType.BLACK, position=Position(0, 6))
+        self.black_player = Player(
+            PlayerType.BLACK, position=self.BLACK_INITIAL_POSITION)
         self.current_player = self.red_player
         self.previous_swap_index = [[0, 6], [6, 0]]
 
@@ -96,7 +97,8 @@ class Game:
     def move(self):
         print('Please choose your desire position')
         possible_moves = self.list_possible_moves_for_current_player()
-        self.filter_possible_moves_for_current_player(possible_moves)
+        possible_moves = self.filter_possible_moves_for_current_player(
+            possible_moves)
         for i, move in enumerate(possible_moves):
             print(f'{i+1}. {self.board[move.x][move.y]} {str(move)}')
         selected = get_int_input_option()
@@ -126,10 +128,13 @@ class Game:
 
     def filter_possible_moves_for_current_player(self, possible_moves):
         # filter queen
-        # opponent = self.black_player if self.current_player == self.red_player or self.red_player
-        # winning
-        # possible_moves = filter(lambda a: a.x!=
-        pass
+        opponent = self.black_player if self.current_player == self.red_player else self.red_player
+        queen_position = self.BLACK_INITIAL_POSITION if self.current_player == self.black_player else self.RED_INITAL_POSTION
+        res = []
+        for move in possible_moves:
+            if move != queen_position and move != opponent.position:
+                res.append(move)
+        return res
 
     def get_valid_jack_moves(self, current_position) -> list[Position]:
         jack_moves = [(-1, 2), (1, 2), (2, 1), (2, -1),
