@@ -145,6 +145,8 @@ class Game:
     def get_valid_horizontal_moves(self,card, current_position) -> list[Position]:
         card_value = card.rank
         valid_moves = []
+        print(current_position.y)
+        print(card_value)
         if current_position.y + card_value <self.MATRIX_SIZE:
             valid_moves.append(Position(current_position.x,current_position.y + card_value))
         if (current_position.y+1) - card_value > 0:
@@ -182,6 +184,8 @@ class Game:
     def get_valid_vertical_moves(self,card, current_position) -> list[Position]:
         card_value = card.rank
         valid_moves = []
+        print(current_position.x)
+        print(card_value)
         if current_position.x + card_value <self.MATRIX_SIZE:
             valid_moves.append(Position(current_position.x + card_value,current_position.y ))
         if (current_position.x+1) - card_value > 0:
