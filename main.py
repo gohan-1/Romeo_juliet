@@ -9,14 +9,14 @@ if __name__ == "__main__":
     while True:
         try:
             print(purple_text('Please choose the mode you want to start the game'))
-            print('Play in turn >>>> Press 1')
-            print('Play with AI >>>> Press 2')
-            print('Quit >>>> Press 3')
+            print('Play in turn >>> Press 1')
+            print('Play with AI >>> Press 2')
+            print('Quit >>> Press 3')
             choice = get_int_input_option()
             if choice == 1:
                 game = Game()
                 option = input(purple_text(
-                    "Do you want to update players' info? (Y/N)"))
+                    "Do you want to update players' info? (y/N)"))
                 if option == 'y' or option == 'Y':
                     game.setup_players()
                 game.play()
@@ -31,6 +31,3 @@ if __name__ == "__main__":
 
         except Exception as e:
             print('There is error. Restarting the game...')
-
-        
-        
