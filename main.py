@@ -29,7 +29,7 @@ if __name__ == "__main__":
             else:
                 print("Invalid choice. Please enter 1, 2, or 3.")
 
-            except Exception as e:
+        except Exception as e:
             print('There is error. Restarting the game...')
 
         
