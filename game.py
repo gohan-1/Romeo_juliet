@@ -92,6 +92,10 @@ class Game:
                 self.move()
             elif option == TurnType.SWAP:
                 self.swap()
+            
+            check_win = self.checking_winning_position()
+            if check_win ==  True:
+                return False
             self.toggle_players()
 
     def move(self):
@@ -136,6 +140,17 @@ class Game:
             if move != queen_position and move != opponent.position:
                 res.append(move)
         return res
+
+    def checking_winning_position(self):
+        if self.black_player.position == Position(6,0):
+            print(' Black has won ')
+            return True
+        elif self.red_player.position == Position(0,6):
+            print(' Red has won ')
+            return True
+        else:
+            return False
+
 
     def get_valid_jack_moves(self, current_position) -> list[Position]:
         jack_moves = [(-1, 2), (1, 2), (2, 1), (2, -1),
@@ -288,6 +303,7 @@ class Game:
                     print(
                         f'{self.board[move.x][move.y]} {str(move)} >>> Press {i + 1} ')
             selected = get_int_input_option()
+            print(selected)
             card = possible_moves[selected-1]
             self.board[selected_joker_position[0] - 1][selected_joker_position[1] - 1], \
                 self.board[card.x][card.y] = \
@@ -296,6 +312,8 @@ class Game:
                            1][selected_joker_position[1] - 1]
             self.previous_swap_index = [Position(card.x, card.y), Position(
                 selected_joker_position[0], selected_joker_position[1])]
+
+            
             return
 
     def select_card(self, joker_position):
