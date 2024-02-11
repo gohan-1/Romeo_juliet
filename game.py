@@ -44,7 +44,7 @@ class Game:
                     temp = self.board[0][self.MATRIX_SIZE-1]
                     self.board[0][self.MATRIX_SIZE-1] = self.board[i][j]
                     self.board[i][j] = temp
-                elif self.board[i][j].is_spade_queen():
+                if self.board[i][j].is_spade_queen():
                     temp = self.board[self.MATRIX_SIZE-1][0]
                     self.board[self.MATRIX_SIZE-1][0] = self.board[i][j]
                     self.board[i][j] = temp
