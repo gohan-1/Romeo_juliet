@@ -7,7 +7,7 @@ if __name__ == "__main__":
     print('Welcome to Romeo and Juliet Game')
 
     while True:
-        try:
+        # try:
             print(purple_text('Please choose the mode you want to start the game'))
             print('Play in turn >>> Press 1')
             print('Play with AI >>> Press 2')
@@ -29,5 +29,5 @@ if __name__ == "__main__":
             else:
                 print("Invalid choice. Please enter 1, 2, or 3.")
 
-        except Exception as e:
-            print('There is error. Restarting the game...')
+        # except Exception as e:
+        #     print('There is error. Restarting the game...')

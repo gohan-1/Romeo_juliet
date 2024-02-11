@@ -122,7 +122,12 @@ class Game:
         elif current_card.is_black_numeral():
             return self.get_valid_horizontal_moves(current_card, position)
         elif current_card.is_joker():
-            return self.get_valid_jocker_moves(position)
+            all_moves = self.get_valid_jocker_moves(position)
+            unique_list = []
+            for item in all_moves:
+                if item not in unique_list:
+                    unique_list.append(item)
+            return  unique_list
         elif current_card.is_jack():
             return self.get_valid_jack_moves(position)
         elif current_card.is_king():
@@ -297,6 +302,7 @@ class Game:
             possible_moves = self.select_card(selected_joker_position)
             possible_moves = self.filter_possible_moves_for_current_player(
                 possible_moves)
+            
 
             for i, move in enumerate(possible_moves):
                 if Position(move.x + 1, move.y + 1) not in self.previous_swap_index and Position(move.x, move.y) not in self.previous_swap_index:
