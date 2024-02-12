@@ -89,20 +89,25 @@ class Game:
             self.print_board()
             option = self.turn_prompt()
             if option == TurnType.MOVE:
-                self.move()
+                if not self.move():
+                    continue
             elif option == TurnType.SWAP:
-                self.swap()
-            
+                if not self.swap():
+                    continue
+
             check_win = self.checking_winning_position()
-            if check_win ==  True:
+            if check_win == True:
                 return False
             self.toggle_players()
 
-    def move(self):
+    def move(self) -> bool:
         print('Please choose your desired position')
         possible_moves = self.list_possible_moves_for_current_player()
         possible_moves = self.filter_possible_moves_for_current_player(
             possible_moves)
+        if len(possible_moves) == 0:
+            print(red_text('No possible moves for this card'))
+            return False
         for i, move in enumerate(possible_moves):
             print(
                 f'{self.board[move.x][move.y]} {str(move)} >>> Press {i + 1} ')
@@ -113,6 +118,7 @@ class Game:
         self.update_current_player_position(possible_moves[selected-1])
         self.evaluate_current_player_position()
         self.update_counter()
+        return True
 
     def list_possible_moves_for_current_player(self) -> list[Position]:
         position = self.current_player.position
@@ -127,7 +133,7 @@ class Game:
             for item in all_moves:
                 if item not in unique_list:
                     unique_list.append(item)
-            return  unique_list
+            return unique_list
         elif current_card.is_jack():
             return self.get_valid_jack_moves(position)
         elif current_card.is_king():
@@ -147,15 +153,14 @@ class Game:
         return res
 
     def checking_winning_position(self):
-        if self.black_player.position == Position(6,0):
+        if self.black_player.position == Position(6, 0):
             print(' Black has won ')
             return True
-        elif self.red_player.position == Position(0,6):
+        elif self.red_player.position == Position(0, 6):
             print(' Red has won ')
             return True
         else:
             return False
-
 
     def get_valid_jack_moves(self, current_position) -> list[Position]:
         jack_moves = [(-1, 2), (1, 2), (2, 1), (2, -1),
@@ -179,87 +184,57 @@ class Game:
                 valid_moves.append(Position(new_x, new_y))
         return valid_moves
 
+    def check_right(self, cur, opp, value):
+        if cur > opp and cur + value > self.MATRIX_SIZE + opp:
+            return False
+        if cur < opp and cur + value > opp:
+            return False
+        return True
+
+    def check_left(self, cur, opp, value):
+        if cur < opp and cur - value < opp:
+            return False
+        if cur > opp and self.MATRIX_SIZE + cur - value < opp:
+            return False
+        return True
+
     def get_valid_horizontal_moves(self, card, current_position) -> list[Position]:
         card_value = card.rank
         valid_moves = []
-        if current_position.y + card_value < self.MATRIX_SIZE:
-            valid_moves.append(Position(current_position.x,
-                               current_position.y + card_value))
-        if (current_position.y+1) - card_value > 0:
-            valid_moves.append(Position(current_position.x,
-                               current_position.y - card_value))
-        if (current_position.y+1) + card_value > self.MATRIX_SIZE:
+        new_y1 = (current_position.y + card_value) % self.MATRIX_SIZE
+        new_y2 = (self.MATRIX_SIZE + current_position.y -
+                  card_value) % self.MATRIX_SIZE
+        new_ys = [new_y1, new_y2]
+        opponent = self.black_player if self.current_player == self.red_player else self.red_player
+        opponent_position = opponent.position
+        if current_position.x == opponent_position.x:
+            if not self.check_right(current_position.y, opponent_position.y, card_value):
+                new_ys.remove(new_y1)
+            if not self.check_left(current_position.y, opponent_position.y, card_value):
+                new_ys.remove(new_y2)
 
-            reminder = card_value % self.MATRIX_SIZE
-
-            padding = (current_position.y+1)
-
-            value = (reminder + padding) % self.MATRIX_SIZE
-            if value != 0:
-                valid_moves.append(Position(current_position.x, (value - 1)))
-            else:
-                valid_moves.append(
-                    Position(current_position.x, self.MATRIX_SIZE-1))
-
-        if (current_position.y+1) - card_value <= 0:
-
-            reminder = card_value % self.MATRIX_SIZE
-
-            padding = current_position.y + 1
-
-            value = abs(reminder - padding)
-            if padding > reminder:
-                valid_moves.append(
-                    Position(current_position.x, current_position.y - (reminder)))
-            else:
-                value = abs(reminder - padding)
-                valid_moves.append(
-                    Position(current_position.x, self.MATRIX_SIZE - (value+1)))
+        for new_y in new_ys:
+            valid_moves.append(Position(current_position.x, new_y))
 
         return valid_moves
 
     def get_valid_vertical_moves(self, card, current_position) -> list[Position]:
         card_value = card.rank
         valid_moves = []
-        if current_position.x + card_value < self.MATRIX_SIZE:
-            valid_moves.append(
-                Position(current_position.x + card_value, current_position.y))
-        if (current_position.x+1) - card_value > 0:
-            valid_moves.append(
-                Position(current_position.x - card_value, current_position.y))
-        if (current_position.x+1) + card_value > self.MATRIX_SIZE:
+        new_x1 = (current_position.x + card_value) % self.MATRIX_SIZE
+        new_x2 = (self.MATRIX_SIZE + current_position.x -
+                  card_value) % self.MATRIX_SIZE
+        new_xs = [new_x1, new_x2]
+        opponent = self.black_player if self.current_player == self.red_player else self.red_player
+        opponent_position = opponent.position
+        if opponent_position.y == current_position.y:
+            if not self.check_right(current_position.x, opponent_position.x, card_value):
+                new_xs.remove(new_x1)
+            if not self.check_left(current_position.x, opponent_position.x, card_value):
+                new_xs.remove(new_x2)
+        for new_x in new_xs:
+            valid_moves.append(Position(new_x, current_position.y))
 
-            reminder = card_value % self.MATRIX_SIZE
-
-            padding = (current_position.x+1)
-
-            value = (reminder + padding) % self.MATRIX_SIZE
-
-            if value != 0:
-
-                valid_moves.append(Position((value - 1), current_position.y))
-            else:
-
-                valid_moves.append(
-                    Position(self.MATRIX_SIZE - 1, current_position.x))
-
-        if (current_position.x+1) - card_value <= 0:
-
-            reminder = card_value % self.MATRIX_SIZE
-
-            padding = current_position.x + 1
-
-            value = abs(reminder - padding)
-            if padding > reminder:
-
-                valid_moves.append(
-                    Position(current_position.x - (reminder), current_position.y))
-            else:
-
-                value = abs(reminder - padding)
-
-                valid_moves.append(
-                    Position(self.MATRIX_SIZE - (value+1), current_position.y))
         return valid_moves
 
     def update_current_player_position(self, new_position):
@@ -285,7 +260,9 @@ class Game:
                 for j in range(self.MATRIX_SIZE):
                     if (self.board[i][j].is_joker() and Position(i, j) not in self.previous_swap_index and not self.is_occuiped(Position(i, j))):
                         jokers.append([i+1, j+1])
-
+            if len(jokers) == 0:
+                print(red_text('No jokers available to swap'))
+                return False
             print(
                 f'You have {len(jokers)} jokers to swap which are given below: ')
             # joker = [joker for joker in jokers]
@@ -302,7 +279,6 @@ class Game:
             possible_moves = self.select_card(selected_joker_position)
             possible_moves = self.filter_possible_moves_for_current_player(
                 possible_moves)
-            
 
             for i, move in enumerate(possible_moves):
                 if Position(move.x + 1, move.y + 1) not in self.previous_swap_index and Position(move.x, move.y) not in self.previous_swap_index:
@@ -318,9 +294,7 @@ class Game:
                            1][selected_joker_position[1] - 1]
             self.previous_swap_index = [Position(card.x, card.y), Position(
                 selected_joker_position[0], selected_joker_position[1])]
-
-            
-            return
+            return True
 
     def select_card(self, joker_position):
         list_of_positions = []
