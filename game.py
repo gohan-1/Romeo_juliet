@@ -153,11 +153,11 @@ class Game:
         return res
 
     def checking_winning_position(self):
-        if self.black_player.position == Position(6, 0):
-            print(' Black has won ')
+        if self.black_player.position == self.RED_INITAL_POSTION:
+            print('Black has won')
             return True
-        elif self.red_player.position == Position(0, 6):
-            print(' Red has won ')
+        elif self.red_player.position == self.BLACK_INITIAL_POSITION:
+            print('Red has won')
             return True
         else:
             return False
