@@ -13,6 +13,10 @@ def purple_text(text):
     return f"{Fore.LIGHTMAGENTA_EX}{text}{Style.RESET_ALL}"
 
 
+def yellow_text(text):
+    return f"{Fore.YELLOW}{text}{Style.RESET_ALL}"
+
+
 def text_with_red_background(text):
     return f"{Back.RED}{text}{Style.RESET_ALL}"
 

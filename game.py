@@ -1,7 +1,7 @@
 from enum import Enum
 from card import Card
 from deck import Deck
-from helpers import get_int_input_option, green_text, purple_text, red_text, text_with_blue_background, text_with_red_background
+from helpers import get_int_input_option, green_text, purple_text, red_text, text_with_blue_background, text_with_red_background, yellow_text
 
 from player import Player, PlayerType
 from position import Position
@@ -154,10 +154,10 @@ class Game:
 
     def checking_winning_position(self):
         if self.black_player.position == self.RED_INITAL_POSTION:
-            print('Black has won')
+            print(yellow_text('BLACK WINS'))
             return True
         elif self.red_player.position == self.BLACK_INITIAL_POSITION:
-            print('Red has won')
+            print(yellow_text('RED WINS'))
             return True
         else:
             return False
@@ -192,9 +192,9 @@ class Game:
         return True
 
     def check_left(self, cur, opp, value):
-        if cur < opp and cur - value < opp:
+        if cur < opp and self.MATRIX_SIZE + cur - value < opp:
             return False
-        if cur > opp and self.MATRIX_SIZE + cur - value < opp:
+        if cur > opp and cur - value < opp:
             return False
         return True
 
@@ -208,10 +208,13 @@ class Game:
         opponent = self.black_player if self.current_player == self.red_player else self.red_player
         opponent_position = opponent.position
         if current_position.x == opponent_position.x:
+            print(current_position.y, opponent_position.y, card_value)
             if not self.check_right(current_position.y, opponent_position.y, card_value):
                 new_ys.remove(new_y1)
+                print(new_ys)
             if not self.check_left(current_position.y, opponent_position.y, card_value):
                 new_ys.remove(new_y2)
+                print(new_ys)
 
         for new_y in new_ys:
             valid_moves.append(Position(current_position.x, new_y))
@@ -267,7 +270,7 @@ class Game:
                 f'You have {len(jokers)} jokers to swap which are given below: ')
             # joker = [joker for joker in jokers]
             for index, value in enumerate(jokers):
-                print(f' {value} >>> Press {index + 1}')
+                print(f'{value} >>> Press {index + 1}')
             selected_joker = get_int_input_option()
             while selected_joker > len(jokers) or selected_joker <= 0:
                 print(red_text('Invalid input, please choose listed option'))
