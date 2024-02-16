@@ -152,6 +152,13 @@ class Game:
                 res.append(move)
         return res
 
+    def filter_possible_swap(self, possible_moves):
+        res = []
+        for move in possible_moves:
+            if move not in self.previous_swap_index and not self.is_occuiped(move) and move != self.RED_INITAL_POSTION and move != self.BLACK_INITIAL_POSITION:
+                res.append(move)
+        return res
+
     def checking_winning_position(self):
         if self.black_player.position == self.RED_INITAL_POSTION:
             print(yellow_text('BLACK WINS'))
@@ -262,7 +269,7 @@ class Game:
             for i in range(self.MATRIX_SIZE):
                 for j in range(self.MATRIX_SIZE):
                     if (self.board[i][j].is_joker() and Position(i, j) not in self.previous_swap_index and not self.is_occuiped(Position(i, j))):
-                        jokers.append([i+1, j+1])
+                        jokers.append(Position(i, j))
             if len(jokers) == 0:
                 print(red_text('No jokers available to swap'))
                 return False
@@ -279,34 +286,32 @@ class Game:
             print('Now select the card the card you want to swap.')
             selected_joker_position = jokers[selected_joker - 1]
 
-            possible_moves = self.select_card(selected_joker_position)
-            possible_moves = self.filter_possible_moves_for_current_player(
-                possible_moves)
+            swap_positions = self.select_card(selected_joker_position)
+            swap_positions = self.filter_possible_swap(swap_positions)
 
-            for i, move in enumerate(possible_moves):
+            for i, move in enumerate(swap_positions):
                 if Position(move.x + 1, move.y + 1) not in self.previous_swap_index and Position(move.x, move.y) not in self.previous_swap_index:
                     print(
                         f'{self.board[move.x][move.y]} {str(move)} >>> Press {i + 1} ')
             selected = get_int_input_option()
             print(selected)
-            card = possible_moves[selected-1]
-            self.board[selected_joker_position[0] - 1][selected_joker_position[1] - 1], \
-                self.board[card.x][card.y] = \
-                self.board[card.x][card.y], \
-                self.board[selected_joker_position[0] -
-                           1][selected_joker_position[1] - 1]
-            self.previous_swap_index = [Position(card.x, card.y), Position(
-                selected_joker_position[0], selected_joker_position[1])]
+            selected_swap_card = swap_positions[selected-1]
+            self.board[selected_joker_position.x][selected_joker_position.y], \
+                self.board[selected_swap_card.x][selected_swap_card.y] = \
+                self.board[selected_swap_card.x][selected_swap_card.y], \
+                self.board[selected_joker_position.x][selected_joker_position.y]
+            self.previous_swap_index = [
+                selected_swap_card, selected_joker_position]
             return True
 
     def select_card(self, joker_position):
         list_of_positions = []
         for i in range(self.MATRIX_SIZE):
-            if (joker_position[0] - 1) != i:
-                list_of_positions.append(Position(i, joker_position[1] - 1))
+            if (joker_position.x) != i:
+                list_of_positions.append(Position(i, joker_position.y))
         for j in range(self.MATRIX_SIZE):
-            if ((joker_position[1]-1) != j):
-                list_of_positions.append(Position(joker_position[0] - 1, j))
+            if ((joker_position.y) != j):
+                list_of_positions.append(Position(joker_position.x, j))
         return list_of_positions
 
     def is_occuiped(self, position):
