@@ -218,10 +218,8 @@ class Game:
             print(current_position.y, opponent_position.y, card_value)
             if not self.check_right(current_position.y, opponent_position.y, card_value):
                 new_ys.remove(new_y1)
-                print(new_ys)
             if not self.check_left(current_position.y, opponent_position.y, card_value):
                 new_ys.remove(new_y2)
-                print(new_ys)
 
         for new_y in new_ys:
             valid_moves.append(Position(current_position.x, new_y))
@@ -293,7 +291,6 @@ class Game:
                 print(
                     f'{self.board[move.x][move.y]} {str(move)} >>> Press {i + 1} ')
             selected = get_int_input_option()
-            print(selected)
             selected_swap_card = swap_positions[selected-1]
             self.board[selected_joker_position.x][selected_joker_position.y], \
                 self.board[selected_swap_card.x][selected_swap_card.y] = \
