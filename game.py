@@ -290,9 +290,8 @@ class Game:
             swap_positions = self.filter_possible_swap(swap_positions)
 
             for i, move in enumerate(swap_positions):
-                if Position(move.x + 1, move.y + 1) not in self.previous_swap_index and Position(move.x, move.y) not in self.previous_swap_index:
-                    print(
-                        f'{self.board[move.x][move.y]} {str(move)} >>> Press {i + 1} ')
+                print(
+                    f'{self.board[move.x][move.y]} {str(move)} >>> Press {i + 1} ')
             selected = get_int_input_option()
             print(selected)
             selected_swap_card = swap_positions[selected-1]
