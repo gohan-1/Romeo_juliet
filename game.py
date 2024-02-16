@@ -215,7 +215,6 @@ class Game:
         opponent = self.black_player if self.current_player == self.red_player else self.red_player
         opponent_position = opponent.position
         if current_position.x == opponent_position.x:
-            print(current_position.y, opponent_position.y, card_value)
             if not self.check_right(current_position.y, opponent_position.y, card_value):
                 new_ys.remove(new_y1)
             if not self.check_left(current_position.y, opponent_position.y, card_value):
