@@ -44,7 +44,7 @@ class Game:
                     temp = self.board[0][self.MATRIX_SIZE-1]
                     self.board[0][self.MATRIX_SIZE-1] = self.board[i][j]
                     self.board[i][j] = temp
-                
+
         for i in range(self.MATRIX_SIZE):
             for j in range(self.MATRIX_SIZE):
                 if self.board[i][j].is_spade_queen():
@@ -106,8 +106,6 @@ class Game:
     def move(self) -> bool:
         print('Please choose your desired position')
         possible_moves = self.list_possible_moves_for_current_player()
-        possible_moves = self.filter_possible_moves_for_current_player(
-            possible_moves)
         if len(possible_moves) == 0:
             print(red_text('No possible moves for this card'))
             return False
@@ -126,24 +124,27 @@ class Game:
     def list_possible_moves_for_current_player(self) -> list[Position]:
         position = self.current_player.position
         current_card = self.board[position.x][position.y]
+        possible_moves = []
         if current_card.is_red_numeral():
-            return self.get_valid_vertical_moves(current_card, position)
+            possible_moves = self.get_valid_vertical_moves(
+                current_card, position)
         elif current_card.is_black_numeral():
-            return self.get_valid_horizontal_moves(current_card, position)
+            possible_moves = self.get_valid_horizontal_moves(
+                current_card, position)
         elif current_card.is_joker():
             all_moves = self.get_valid_jocker_moves(position)
             unique_list = []
             for item in all_moves:
                 if item not in unique_list:
                     unique_list.append(item)
-            return unique_list
+            possible_moves = unique_list
         elif current_card.is_jack():
-            return self.get_valid_jack_moves(position)
+            possible_moves = self.get_valid_jack_moves(position)
         elif current_card.is_king():
-            return self.get_valid_king_moves(position)
+            possible_moves = self.get_valid_king_moves(position)
         elif current_card.is_queen():
-            return self.get_valid_king_moves(position)
-        return []
+            possible_moves = self.get_valid_king_moves(position)
+        return self.filter_possible_moves_for_current_player(possible_moves)
 
     def filter_possible_moves_for_current_player(self, possible_moves):
         # filter queen
@@ -263,13 +264,17 @@ class Game:
         black_name = input("Black player's name: ")
         self.black_player.name = black_name
 
+    def get_swappable_jokers(self):
+        jokers = []
+        for i in range(self.MATRIX_SIZE):
+            for j in range(self.MATRIX_SIZE):
+                if (self.board[i][j].is_joker() and Position(i, j) not in self.previous_swap_index and not self.is_occuiped(Position(i, j))):
+                    jokers.append(Position(i, j))
+        return jokers
+
     def swap(self):
         while True:
-            jokers = []
-            for i in range(self.MATRIX_SIZE):
-                for j in range(self.MATRIX_SIZE):
-                    if (self.board[i][j].is_joker() and Position(i, j) not in self.previous_swap_index and not self.is_occuiped(Position(i, j))):
-                        jokers.append(Position(i, j))
+            jokers = self.get_swappable_jokers()
             if len(jokers) == 0:
                 print(red_text('No jokers available to swap'))
                 return False
@@ -286,8 +291,7 @@ class Game:
             print('Now select the card the card you want to swap.')
             selected_joker_position = jokers[selected_joker - 1]
 
-            swap_positions = self.select_card(selected_joker_position)
-            swap_positions = self.filter_possible_swap(swap_positions)
+            swap_positions = self.list_possible_swaps(selected_joker_position)
 
             for i, move in enumerate(swap_positions):
                 print(
@@ -302,7 +306,7 @@ class Game:
                 selected_swap_card, selected_joker_position]
             return True
 
-    def select_card(self, joker_position):
+    def list_possible_swaps(self, joker_position):
         list_of_positions = []
         for i in range(self.MATRIX_SIZE):
             if (joker_position.x) != i:
@@ -310,7 +314,7 @@ class Game:
         for j in range(self.MATRIX_SIZE):
             if ((joker_position.y) != j):
                 list_of_positions.append(Position(joker_position.x, j))
-        return list_of_positions
+        return self.filter_possible_swap(list_of_positions)
 
     def is_occuiped(self, position):
         return self.red_player.position == position or self.black_player.position == position
