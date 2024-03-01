@@ -1,11 +1,14 @@
 import sys
-import os
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel
 from PyQt5.QtGui import QPixmap
 
+from game import Game
+
+
 class CardGrid(QWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None, game: Game = None):
+        super().__init__(parent)
 
         self.setWindowTitle("Card Grid")
         self.setGeometry(80, 80, 1000, 1000)
@@ -13,23 +16,24 @@ class CardGrid(QWidget):
         self.grid_layout = QGridLayout()
         self.setLayout(self.grid_layout)
 
-        self.create_grid()
+        self.create_grid(game)
+        self.resize(600, 600)
 
-    def create_grid(self):
-        # Load card images from the "cardss" folder and add them to the grid
-        path = "cards"
-        for i, filename in enumerate(os.listdir(path)):
-            row = i // 7
-            col = i % 7
+    def create_grid(self, game: Game):
+        board = game.board
+        for row in range(game.MATRIX_SIZE):
+            for col in range(game.MATRIX_SIZE):
+                card = board[row][col]
+                card_label = QLabel(str(card))
+                pixmap = QPixmap(card.get_image_path())
+                pixmap = pixmap.scaledToWidth(
+                    64, Qt.TransformationMode.SmoothTransformation)
+                card_label.setPixmap(pixmap)
+                self.grid_layout.addWidget(card_label, row, col)
 
-            card_label = QLabel(self)
-            pixmap = QPixmap(os.path.join(path, filename))
-            pixmap = pixmap.scaledToWidth(55) 
-            card_label.setPixmap(pixmap)
-            self.grid_layout.addWidget(card_label, row, col)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    card_grid = CardGrid()
+    card_grid = CardGrid(game=Game())
     card_grid.show()
     sys.exit(app.exec_())

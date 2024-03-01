@@ -1,4 +1,6 @@
 SUIT_MAP = {'S': '♠', 'H': '♥', 'D': '♦', 'C': '♣', 'Joker': '🃟'}
+SUIT_MAP_FILE = {'S': 'spades', 'H': 'hearts',
+                 'D': 'diamonds', 'C': 'clubs', 'Joker': 'joker'}
 
 
 class Card:
@@ -25,6 +27,23 @@ class Card:
         elif rank == 0:
             rank = ''
         return f"{rank}{suit}"
+
+    def get_image_path(self, folder_path='cards'):
+        if self.suit == 'Joker':
+            return f'{folder_path}/red_joker.png'
+        rank = self.rank
+        if rank == 1:
+            rank = 'ace'
+        elif rank == 11:
+            rank = 'jack'
+        elif rank == 12:
+            rank = 'queen'
+        elif rank == 13:
+            rank = 'king'
+        elif rank == 0:
+            rank = ''
+        suit = SUIT_MAP_FILE[self.suit]
+        return f'{folder_path}/{rank}_of_{suit}.png'
 
     def is_heart_queen(self):
         return self.suit == 'H' and self.rank == 12
