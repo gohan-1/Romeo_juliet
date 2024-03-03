@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QPushButton
 from PyQt5.QtGui import QPixmap
 
 from game import Game
@@ -18,6 +18,10 @@ class CardGrid(QWidget):
 
         self.create_grid(game)
         self.resize(600, 600)
+        self.button = QPushButton("Click me")  # Button creation moved here
+
+    def card_clicked(self, card):
+        print(f"Card clicked {card}")
 
     def create_grid(self, game: Game):
         board = game.board
@@ -29,7 +33,24 @@ class CardGrid(QWidget):
                 pixmap = pixmap.scaledToWidth(
                     64, Qt.TransformationMode.SmoothTransformation)
                 card_label.setPixmap(pixmap)
+                card_label.setScaledContents(True)
+                card_label.mousePressEvent = lambda event, row=row, col=col: self.card_clicked(board[row][col])
                 self.grid_layout.addWidget(card_label, row, col)
+        
+        chess_coin_label = QLabel()
+        chess_coin_pixmap = QPixmap("cards/red_coin.png")
+        chess_coin_pixmap = chess_coin_pixmap.scaledToWidth(
+            64, Qt.TransformationMode.SmoothTransformation)
+        chess_coin_label.setPixmap(chess_coin_pixmap)
+        self.grid_layout.addWidget(chess_coin_label, 6, 0)
+
+        chess_coin_label = QLabel()
+        chess_coin_pixmap = QPixmap("cards/black_coin.png")
+        chess_coin_pixmap = chess_coin_pixmap.scaledToWidth(
+            64, Qt.TransformationMode.SmoothTransformation)
+        chess_coin_label.setPixmap(chess_coin_pixmap)
+        self.grid_layout.addWidget(chess_coin_label, 0, 6)
+
 
 
 if __name__ == "__main__":
