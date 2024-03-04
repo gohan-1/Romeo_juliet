@@ -1,5 +1,7 @@
 import sys
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel
+
 
 class OpeningScreen(QMainWindow):
     def _init_(self):
@@ -29,6 +31,7 @@ class OpeningScreen(QMainWindow):
     def start_game(self):
         # Implement logic to start the game
         print("Starting the game...")
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

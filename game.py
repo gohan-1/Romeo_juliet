@@ -101,7 +101,6 @@ class Game:
             check_win = self.checking_winning_position()
             if check_win == True:
                 return False
-            self.toggle_players()
 
     def move(self) -> bool:
         print('Please choose your desired position')
@@ -116,8 +115,11 @@ class Game:
         while selected > len(possible_moves) or selected <= 0:
             print(red_text('Invalid input, please choose listed option'))
             selected = get_int_input_option()
-        self.update_current_player_position(possible_moves[selected-1])
-        self.evaluate_current_player_position()
+        return self.perform_move(possible_moves[selected-1])
+
+    def perform_move(self, move):
+        self.update_current_player_position(move)
+        self.toggle_players()
         self.update_counter()
         return True
 
@@ -297,14 +299,17 @@ class Game:
                 print(
                     f'{self.board[move.x][move.y]} {str(move)} >>> Press {i + 1} ')
             selected = get_int_input_option()
-            selected_swap_card = swap_positions[selected-1]
-            self.board[selected_joker_position.x][selected_joker_position.y], \
-                self.board[selected_swap_card.x][selected_swap_card.y] = \
-                self.board[selected_swap_card.x][selected_swap_card.y], \
-                self.board[selected_joker_position.x][selected_joker_position.y]
-            self.previous_swap_index = [
-                selected_swap_card, selected_joker_position]
+            self.perform_swap(selected_joker_position,
+                              swap_positions[selected-1])
             return True
+
+    def perform_swap(self, joker_position, swap_position):
+        self.board[joker_position.x][joker_position.y], \
+            self.board[swap_position.x][swap_position.y] = \
+            self.board[swap_position.x][swap_position.y], \
+            self.board[joker_position.x][joker_position.y]
+        self.previous_swap_index = [swap_position, joker_position]
+        self.toggle_players()
 
     def list_possible_swaps(self, joker_position):
         list_of_positions = []
