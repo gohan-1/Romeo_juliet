@@ -1,7 +1,7 @@
 import re
 import sys
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QPushButton
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QLabel, QPushButton,QGraphicsOpacityEffect
 from PyQt5.QtGui import QPixmap
 
 from game import Game
@@ -23,6 +23,8 @@ class CardGrid(QWidget):
         self.setLayout(self.grid_layout)
 
         self.create_grid()
+        self.red_romeo()
+        self.black_romeo()
         self.resize(600, 600)
         self.button = QPushButton("Click me")  # Button creation moved here
 
@@ -34,6 +36,9 @@ class CardGrid(QWidget):
             self.is_swap = False
             self.possible_clicks = []
             self.create_grid()
+            self.red_romeo()
+            self.black_romeo()
+           
             return
         if self.is_swap and Position(position_x, position_y) in self.possible_clicks:
             self.game.perform_swap(Position(position_x, position_y))
@@ -70,7 +75,24 @@ class CardGrid(QWidget):
             print("Invalid click")
 
     def highlight_cards(self, positions):
-        pass
+        game = self.game
+        board = game.board  
+        for row in range(game.MATRIX_SIZE):
+            for col in range(game.MATRIX_SIZE):
+                found = False
+                for position in positions:
+                    if position.x == row and position.y == col:
+                        found = True
+                        break
+                if not found:
+                    cell_widget = self.grid_layout.itemAtPosition(row, col).widget()
+                    opacity_effect = QGraphicsOpacityEffect()
+                    opacity_effect.setOpacity(0.5)  # Adjust opacity as needed
+                    cell_widget.setGraphicsEffect(opacity_effect)
+                    cell_widget.setStyleSheet("background-color: yellow;")
+       
+          
+            # QTimer.singleShot(1000, lambda: cell_widget.setGraphicsEffect(None))
 
     def is_joker_position(self, position_x, position_y):
         joker_positions = self.game.get_swappable_jokers()
@@ -94,6 +116,10 @@ class CardGrid(QWidget):
                 card_label.mousePressEvent = lambda event, row=row, col=col: self.card_clicked(
                     row, col, event)
                 self.grid_layout.addWidget(card_label, row, col)
+
+    def red_romeo(self):  
+        game = self.game
+        board = game.board     
         red_position = game.red_player.position
         red_lable = QLabel()
         red_pixmap = QPixmap("assets/coins/red_coin.png")
@@ -103,7 +129,9 @@ class CardGrid(QWidget):
             red_position.x, red_position.y, event)
         red_lable.setPixmap(red_pixmap)
         self.grid_layout.addWidget(red_lable, red_position.x, red_position.y)
-
+    def black_romeo(self):
+        game = self.game
+        board = game.board  
         black_position = game.black_player.position
         black_lable = QLabel()
         black_pixmap = QPixmap("assets/coins/black_coin.png")

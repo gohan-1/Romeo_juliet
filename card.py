@@ -30,7 +30,7 @@ class Card:
 
     def get_image_path(self, folder_path='assets/cards'):
         if self.suit == 'Joker':
-            return f'{folder_path}/red_joker.png'
+            return f'{folder_path}/joker.png'
         rank = self.rank
         if rank == 1:
             rank = 'ace'
