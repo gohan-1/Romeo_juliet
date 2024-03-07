@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication,  QWidget, QGridLayout, QLabel
 from PyQt5.QtGui import QBrush,  QPixmap, QPainter
 
@@ -8,10 +8,15 @@ from position import Position
 
 
 class CardGrid(QWidget):
+    progress_signal = pyqtSignal(str)
+    player_signal = pyqtSignal(str)
+
     def __init__(self, parent=None, game: Game = None):
         super().__init__(parent)
+
         if game is None:
             game = Game()
+
         self.setWindowTitle("Romeo and Juliet")
         self.grid_layout = QGridLayout()
         self.grid_layout.setSpacing(3)
@@ -25,7 +30,8 @@ class CardGrid(QWidget):
         self.create_grid()
 
     def card_clicked(self, position_x, position_y, event):
-        print(f"position clicked {position_x} {position_y}")
+        self.progress_signal.emit(
+            f'clicked {self.game.board[position_x][position_y]}')
         if self.is_move and Position(position_x, position_y) in self.possible_clicks:
             self.game.perform_move(Position(position_x, position_y))
             self.is_move = False
@@ -34,6 +40,12 @@ class CardGrid(QWidget):
             self.create_grid()
             self.place_red_romeo()
             self.place_black_romeo()
+            return
+        if self.is_swap and Position(position_x, position_y) == self.picked_joker:
+            self.is_move = False
+            self.is_swap = False
+            self.possible_clicks = []
+            self.create_grid()
             return
         if self.is_swap and Position(position_x, position_y) in self.possible_clicks:
             self.game.perform_swap(
@@ -66,12 +78,13 @@ class CardGrid(QWidget):
     def show_message(self):
         if self.is_move:
             # show in screen
-            print("Invalid move")
+            self.progress_signal.emit("Invalid move")
         elif self.is_swap:
             # show in screen
-            print("Invalid swap")
+            self.progress_signal.emit(
+                "This card is not swappable. Please select another card or click joker again to change.")
         else:
-            print("Invalid click")
+            self.progress_signal.emit("Invalid click")
 
     def highlight_cards(self, positions):
         game = self.game
@@ -170,10 +183,3 @@ class CardGrid(QWidget):
         painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
         painter.drawPixmap(5, 20, coin)
         painter.end()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    card_grid = CardGrid(game=Game())
-    card_grid.show()
-    sys.exit(app.exec_())
