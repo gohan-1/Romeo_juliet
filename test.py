@@ -29,9 +29,19 @@ class CardGrid(QWidget):
         self.picked_joker = None
         self.create_grid()
 
+        
+    
+        
+
+  
+        
+
     def card_clicked(self, position_x, position_y, event):
+            # self.progress_signal.emit(
+            #     f'clicked {self.game.current_player.name}')
         self.progress_signal.emit(
             f'clicked {self.game.board[position_x][position_y]}')
+        
         if self.is_move and Position(position_x, position_y) in self.possible_clicks:
             self.game.perform_move(Position(position_x, position_y))
             self.is_move = False
@@ -124,8 +134,11 @@ class CardGrid(QWidget):
         return None
 
     def create_grid(self):
+        self.progress_signal.emit(
+            f'Current Player {self.game.current_player.name}')
         game = self.game
         board = game.board
+        
         for row in range(game.MATRIX_SIZE):
             for col in range(game.MATRIX_SIZE):
                 card = board[row][col]
@@ -147,9 +160,12 @@ class CardGrid(QWidget):
 
                 card_label.mousePressEvent = lambda event, row=row, col=col: self.card_clicked(
                     row, col, event)
+            
 
         self.place_red_romeo()
         self.place_black_romeo()
+        
+        
 
     def place_red_romeo(self):
         game = self.game
