@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QApplication,  QWidget, QGridLayout, QLabel
+from PyQt5.QtWidgets import QApplication,  QWidget, QGridLayout, QLabel,QMessageBox
 from PyQt5.QtGui import QBrush,  QPixmap, QPainter
 
 from game import Game
@@ -170,6 +170,8 @@ class CardGrid(QWidget):
     def place_red_romeo(self):
         game = self.game
         red_position = game.red_player.position
+        
+        
 
         item = self.grid_layout.itemAtPosition(red_position.x, red_position.y)
         card_label = item.widget()
@@ -182,10 +184,14 @@ class CardGrid(QWidget):
         painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
         painter.drawPixmap(5, 20, red_coin)
         painter.end()
+        if red_position == game.BLACK_INITIAL_POSITION:
+             QMessageBox.warning(self, "Warning", "RED wins")
+
 
     def place_black_romeo(self):
         game = self.game
         black_position = game.black_player.position
+        
 
         item = self.grid_layout.itemAtPosition(
             black_position.x, black_position.y)
@@ -199,3 +205,5 @@ class CardGrid(QWidget):
         painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
         painter.drawPixmap(5, 20, coin)
         painter.end()
+        if black_position == game.RED_INITAL_POSTION:
+            QMessageBox.warning(self, "Warning", "Black Wins")

@@ -54,6 +54,14 @@ class PlayingScreen(QWidget):
         right_layout.addWidget(log_widget)
         main_layout.addLayout(right_layout)
         self.setLayout(main_layout)
+        start_button = QPushButton("Reset Game", self)
+        start_button.clicked.connect(self.reset_game)
+        right_layout.addWidget(start_button)
+
+    def reset_game(self):
+        # Add code here to start the game when the button is clicked
+        print('Reset Game ')
+        
 
 def update_current_player(self):
         self.current_player_label.setText(f'Current Player: {self.card_grid.game.current_player.name}')
