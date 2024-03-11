@@ -7,7 +7,7 @@ from game import Game
 from position import Position
 
 
-class CardGrid(QWidget):
+class GameWidget(QWidget):
     progress_signal = pyqtSignal(str)
     player_signal = pyqtSignal(str)
 
@@ -29,6 +29,33 @@ class CardGrid(QWidget):
         self.picked_joker = None
         self.create_grid()
 
+    def evaluate_current_player_postion(self):
+        msg = QMessageBox()
+        msg.setWindowTitle("Game Finished")
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.buttonClicked.connect(self.reset_game)
+        if self.game.red_player.position == self.game.BLACK_INITIAL_POSITION:
+            self.progress_signal.emit("RED wins")
+            msg.setText("RED wins")
+            msg.exec_()
+        elif self.game.black_player.position == self.game.RED_INITAL_POSTION:
+            self.progress_signal.emit("BLACK wins")
+            msg.setText("BLACK wins")
+            msg.exec_()
+        else:
+            self.progress_signal.emit(
+                f"It's {self.game.current_player.name}'s turn")
+
+    def reset_game(self):
+        self.game = Game()
+        self.is_move = False
+        self.is_swap = False
+        self.possible_clicks = []
+        self.picked_joker = None
+        self.progress_signal.emit(
+            "-----------------------\nWelcome to the game!\nClick on the Romeo to move and click to the Joker to swap. \nGood luck!\nRED plays first. ")
+        self.create_grid()
+
     def card_clicked(self, position_x, position_y, event):
         self.progress_signal.emit(
             f'You clicked {self.game.board[position_x][position_y]}')
@@ -45,6 +72,7 @@ class CardGrid(QWidget):
             self.is_swap = False
             self.possible_clicks = []
             self.create_grid()
+            self.evaluate_current_player_postion()
             return
         if self.is_swap and Position(position_x, position_y) == self.picked_joker:
             self.is_move = False
@@ -59,10 +87,18 @@ class CardGrid(QWidget):
             self.is_swap = False
             self.possible_clicks = []
             self.create_grid()
+            self.evaluate_current_player_postion()
             return
         current_player_position = self.game.current_player.position
         if current_player_position.x == position_x and current_player_position.y == position_y:
             possible_moves = self.game.list_possible_moves_for_current_player()
+            if len(possible_moves) == 0:
+                self.progress_signal.emit(
+                    "No possible moves for the current player.")
+                self.is_move = False
+                self.is_swap = False
+                self.possible_clicks = []
+                return
             self.highlight_cards(possible_moves)
             self.possible_clicks = possible_moves
             self.is_move = True
@@ -72,6 +108,13 @@ class CardGrid(QWidget):
         if position is not None:
             self.picked_joker = position
             possible_swaps = self.game.list_possible_swaps(position)
+            if len(possible_swaps) == 0:
+                self.progress_signal.emit(
+                    "No possible swaps for this joker.")
+                self.is_move = False
+                self.is_swap = False
+                self.possible_clicks = []
+                return
             self.highlight_cards(possible_swaps)
             self.possible_clicks = possible_swaps
             self.is_swap = True
@@ -124,14 +167,14 @@ class CardGrid(QWidget):
 
     def is_joker_position(self, position_x, position_y):
         joker_positions = self.game.get_swappable_jokers()
+        if len(joker_positions) == 0:
+            self.progress_signal.emit("No joker to swap")
         for position in joker_positions:
             if position.x == position_x and position.y == position_y:
                 return position
         return None
 
     def create_grid(self):
-        self.progress_signal.emit(
-            f"It's {self.game.current_player.name}'s turn")
         game = self.game
         board = game.board
 
@@ -175,8 +218,6 @@ class CardGrid(QWidget):
         painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
         painter.drawPixmap(5, 20, red_coin)
         painter.end()
-        if red_position == game.BLACK_INITIAL_POSITION:
-            QMessageBox.warning(self, "Warning", "RED wins")
 
     def place_black_romeo(self):
         game = self.game
@@ -194,5 +235,3 @@ class CardGrid(QWidget):
         painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
         painter.drawPixmap(5, 20, coin)
         painter.end()
-        if black_position == game.RED_INITAL_POSTION:
-            QMessageBox.warning(self, "Warning", "Black Wins")
