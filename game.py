@@ -134,7 +134,7 @@ class Game:
             possible_moves = self.get_valid_horizontal_moves(
                 current_card, position)
         elif current_card.is_joker():
-            all_moves = self.get_valid_jocker_moves(position)
+            all_moves = self.get_valid_joker_moves(position)
             unique_list = []
             for item in all_moves:
                 if item not in unique_list:
@@ -166,7 +166,7 @@ class Game:
         return res
 
     def checking_winning_position(self):
-        if self.black_player.position == self.RED_INITAL_POSTION:    
+        if self.black_player.position == self.RED_INITAL_POSTION:
             print(yellow_text('BLACK WINS'))
             return True
         elif self.red_player.position == self.BLACK_INITIAL_POSITION:
@@ -333,7 +333,7 @@ class Game:
             if choice == 1 or choice == 2:
                 return TurnType(choice)
 
-    def get_valid_jocker_moves(self, current_position):
+    def get_valid_joker_moves(self, current_position):
         king_moves = self.get_valid_king_moves(current_position)
         filtered_king_moves = []
         for king_move in king_moves:
@@ -349,30 +349,34 @@ class Game:
         vertical_moves = []
         horizontal_moves = []
         for i in range(0, self.MATRIX_SIZE):
-            card=self.board[i][current_position.y]
-            if card.is_red_numeral() or card.is_joker():
+            card = self.board[i][current_position.y]
+            if card.is_red_numeral():
                 print(card)
-                if card.is_joker() and card != self.board[current_position.x][current_position.y]:
-                    vertical_moves.append(Position(i,current_position.y))
+                if card != self.board[current_position.x][current_position.y]:
+                    vertical_moves.append(Position(i, current_position.y))
                 else:
-                    valid_cards = self.get_valid_vertical_moves(card,Position(i,current_position.y))
+                    valid_cards = self.get_valid_vertical_moves(
+                        card, Position(i, current_position.y))
                     for valid_card in valid_cards:
-                        print(valid_card.x,valid_card.y)
+                        print(valid_card.x, valid_card.y)
                         if valid_card.y == current_position.y and valid_card.x == current_position.x:
-                            vertical_moves.append(Position(i,current_position.y)) 
-            card=self.board[current_position.x][i]
-            if card.is_black_numeral() or card.is_joker():
+                            vertical_moves.append(
+                                Position(i, current_position.y))
+            card = self.board[current_position.x][i]
+            if card.is_black_numeral():
                 print(card)
-                if card.is_joker() and card != self.board[current_position.x][current_position.y]:                        
-                    horizontal_moves.append(Position(current_position.x,i))
+                if card != self.board[current_position.x][current_position.y]:
+                    horizontal_moves.append(Position(current_position.x, i))
                 else:
-                    valid_cards = self.get_valid_horizontal_moves(card,Position(current_position.x,i))
-                    
+                    valid_cards = self.get_valid_horizontal_moves(
+                        card, Position(current_position.x, i))
+
                     for valid_card in valid_cards:
-                        print(valid_card.x,valid_card.y)
+                        print(valid_card.x, valid_card.y)
                         if valid_card.x == current_position.x and valid_card.y == current_position.y:
-                            horizontal_moves.append(Position(current_position.x,i)) 
-                
+                            horizontal_moves.append(
+                                Position(current_position.x, i))
+
         #     new_x1 = current_position.x + i
         #     new_x2 = current_position.x - i
         #     if new_y1 >= 0 and new_y1 < self.MATRIX_SIZE:
@@ -389,7 +393,7 @@ class Game:
         #     card = self.board[horizontal_move.x][horizontal_move.y]
         #     if card.is_black_numeral():
         #         rank = card.rank % self.MATRIX_SIZE
-        #         if rank > 
+        #         if rank >
         #         filtered_horizontal_moves.append(horizontal_move)
 
         filtered_vertical_moves = []
@@ -397,6 +401,5 @@ class Game:
         #     card = self.board[vertical_move.x][vertical_move.y]
         #     if card.is_red_numeral():
         #         filtered_vertical_moves.append(vertical_move)
-        
 
         return vertical_moves + horizontal_moves + filtered_king_moves + filtered_jack_moves
