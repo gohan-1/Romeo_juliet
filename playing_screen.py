@@ -24,9 +24,13 @@ class LogWidget(QWidget):
         self.textArea.append(initial_text)
         self.layout.addWidget(self.textArea)
         emitter.progress_signal.connect(self.updateTextArea)
+        emitter.player_signal.connect(self.resetTextArea)
 
     def updateTextArea(self, text):
         self.textArea.append(text)
+
+    def resetTextArea(self):
+        self.textArea.clear()
 
 
 class PlayingScreen(QWidget):

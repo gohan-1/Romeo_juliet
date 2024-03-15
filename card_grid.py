@@ -51,8 +51,9 @@ class GameWidget(QWidget):
         self.is_swap = False
         self.possible_clicks = []
         self.picked_joker = None
+        self.player_signal.emit("a")
         self.progress_signal.emit(
-            "-----------------------\nWelcome to the game!\nClick on the Romeo to move and click to the Joker to swap. \nGood luck!\nRED plays first. ")
+            "Welcome to the game!\nClick on the Romeo to move and click to the Joker to swap. \nGood luck!\nRED plays first. ")
         self.create_grid()
 
     def card_clicked(self, position_x, position_y, event):
@@ -70,6 +71,8 @@ class GameWidget(QWidget):
             self.is_move = False
             self.is_swap = False
             self.possible_clicks = []
+            # self.progress_signal.emit(
+            #     f'{self.game.current_player.name} moved to {self.game.current_player.position}')
             self.create_grid()
             self.evaluate_current_player_postion()
             return
@@ -85,6 +88,8 @@ class GameWidget(QWidget):
             self.is_move = False
             self.is_swap = False
             self.possible_clicks = []
+            # self.progress_signal.emit(
+            #     f'{self.game.current_player.name} swapped Joker from {self.picked_joker} to {Position(position_x, position_y)}')
             self.create_grid()
             self.evaluate_current_player_postion()
             return

@@ -15,6 +15,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.stackedWidget.addWidget(self.secondScreen)
 
     def switchToSecondScreen(self):
+        self.secondScreen.game_widget.reset_game()
         self.stackedWidget.setCurrentIndex(1)
 
     def switchToFirstScreen(self):
