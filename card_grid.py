@@ -67,12 +67,13 @@ class GameWidget(QWidget):
             self.create_grid()
             return
         if self.is_move and Position(position_x, position_y) in self.possible_clicks:
+            self.progress_signal.emit(
+                f'{self.game.current_player.name} moved from {self.game.current_player.position} to {Position(position_x, position_y)}')
+
             self.game.perform_move(Position(position_x, position_y))
             self.is_move = False
             self.is_swap = False
             self.possible_clicks = []
-            # self.progress_signal.emit(
-            #     f'{self.game.current_player.name} moved to {self.game.current_player.position}')
             self.create_grid()
             self.evaluate_current_player_postion()
             return
@@ -83,13 +84,13 @@ class GameWidget(QWidget):
             self.create_grid()
             return
         if self.is_swap and Position(position_x, position_y) in self.possible_clicks:
+            self.progress_signal.emit(
+                f'{self.game.current_player.name} swapped Joker from {self.picked_joker} to {Position(position_x, position_y)}')
             self.game.perform_swap(
                 self.picked_joker, Position(position_x, position_y))
             self.is_move = False
             self.is_swap = False
             self.possible_clicks = []
-            # self.progress_signal.emit(
-            #     f'{self.game.current_player.name} swapped Joker from {self.picked_joker} to {Position(position_x, position_y)}')
             self.create_grid()
             self.evaluate_current_player_postion()
             return
