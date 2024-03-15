@@ -30,7 +30,7 @@ class LogWidget(QWidget):
 
 
 class PlayingScreen(QWidget):
-    def __init__(self) -> None:
+    def __init__(self, change_screen_click) -> None:
         super().__init__()
         main_layout = QHBoxLayout()
         self.game_widget = GameWidget()
@@ -41,10 +41,14 @@ class PlayingScreen(QWidget):
         right_layout.addWidget(log_widget)
         main_layout.addLayout(right_layout)
         self.setLayout(main_layout)
-        start_button = QPushButton("Reset Game", self)
-        start_button.setStyleSheet(button_style)
-        start_button.clicked.connect(self.reset_game)
-        right_layout.addWidget(start_button)
+        reset_button = QPushButton("Reset Game", self)
+        reset_button.setStyleSheet(button_style)
+        reset_button.clicked.connect(self.reset_game)
+        quit_button = QPushButton("Quit Game", self)
+        quit_button.setStyleSheet(button_style)
+        quit_button.clicked.connect(change_screen_click)
+        right_layout.addWidget(reset_button)
+        right_layout.addWidget(quit_button)
 
     def reset_game(self):
         # Add code here to start the game when the button is clicked

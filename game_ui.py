@@ -10,12 +10,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.stackedWidget = QtWidgets.QStackedWidget(self)
         self.setCentralWidget(self.stackedWidget)
         self.firstScreen = OpeningScreen(self.switchToSecondScreen)
-        self.secondScreen = PlayingScreen()
+        self.secondScreen = PlayingScreen(self.switchToFirstScreen)
         self.stackedWidget.addWidget(self.firstScreen)
         self.stackedWidget.addWidget(self.secondScreen)
 
     def switchToSecondScreen(self):
         self.stackedWidget.setCurrentIndex(1)
+
+    def switchToFirstScreen(self):
+        self.stackedWidget.setCurrentIndex(0)
 
 
 if __name__ == "__main__":
