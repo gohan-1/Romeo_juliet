@@ -3,6 +3,15 @@ from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QTextEdit, QVBoxL
 
 from card_grid import GameWidget
 
+button_style = """background: rgba(255, 255, 255, 1); 
+color: #000; 
+font-size: 15px; 
+padding: 5px; 
+border-radius: 10px; 
+border: 2px solid #000; 
+width:60px;
+font-family:'Courier'"""
+
 
 class LogWidget(QWidget):
     def __init__(self, emitter, initial_text="") -> None:
@@ -10,6 +19,7 @@ class LogWidget(QWidget):
 
         self.textArea = QTextEdit(self)
         self.textArea.setReadOnly(True)
+        self.textArea.setStyleSheet("font-size: 12px; font-family: Courier;")
         self.layout = QVBoxLayout(self)
         self.textArea.append(initial_text)
         self.layout.addWidget(self.textArea)
@@ -32,17 +42,10 @@ class PlayingScreen(QWidget):
         main_layout.addLayout(right_layout)
         self.setLayout(main_layout)
         start_button = QPushButton("Reset Game", self)
+        start_button.setStyleSheet(button_style)
         start_button.clicked.connect(self.reset_game)
         right_layout.addWidget(start_button)
 
     def reset_game(self):
         # Add code here to start the game when the button is clicked
         self.game_widget.reset_game()
-
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    app.setApplicationDisplayName("Romeo and Juliet")
-    playing_screen = PlayingScreen()
-    playing_screen.show()
-    sys.exit(app.exec_())
