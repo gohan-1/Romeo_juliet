@@ -5,11 +5,7 @@ from helpers import get_int_input_option, green_text, purple_text, red_text, tex
 
 from player import Player, PlayerType
 from position import Position
-
-
-class TurnType(Enum):
-    MOVE = 1
-    SWAP = 2
+from turn import Turn, TurnType
 
 
 class Game:
@@ -373,3 +369,16 @@ class Game:
                 horizontal_moves.append(Position(current_position.x, i))
 
         return vertical_moves + horizontal_moves + filtered_king_moves + filtered_jack_moves
+
+    def generate_possible_moves(self):
+        res = []
+        moves = self.list_possible_moves_for_current_player()
+        for move in moves:
+            res.append(Turn(TurnType.MOVE,
+                       self.current_player.position, move))
+        jokers = self.get_swappable_jokers()
+        for joker in jokers:
+            swaps = self.list_possible_swaps(joker)
+            for swap in swaps:
+                res.append(Turn(TurnType.SWAP, joker, swap))
+        return res

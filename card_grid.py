@@ -1,16 +1,24 @@
+from enum import Enum
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication,  QWidget, QGridLayout, QLabel, QMessageBox
 from PyQt5.QtGui import QBrush,  QPixmap, QPainter
 
-from game import Game
+from game import Game, TurnType
 from position import Position
+from random_ai import RandomAIPlayer
+from turn import Turn
+
+
+class GameMode(Enum):
+    NORMAL = 1
+    AI = 2
 
 
 class GameWidget(QWidget):
     progress_signal = pyqtSignal(str)
     player_signal = pyqtSignal(str)
 
-    def __init__(self, parent=None, game: Game = None):
+    def __init__(self, parent=None, game: Game = None, mode: GameMode = GameMode.NORMAL):
         super().__init__(parent)
 
         if game is None:
@@ -22,6 +30,8 @@ class GameWidget(QWidget):
         self.setLayout(self.grid_layout)
 
         self.game = game
+        self.ai_player = RandomAIPlayer()
+        self.mode = mode
         self.is_move = False
         self.is_swap = False
         self.possible_clicks = []
@@ -44,9 +54,27 @@ class GameWidget(QWidget):
         else:
             self.progress_signal.emit(
                 f"It's {self.game.current_player.name}'s turn")
+            if self.mode == GameMode.AI:
+                self.make_ai_move()
 
-    def reset_game(self):
+    def make_ai_move(self):
+        decision: Turn = self.ai_player.make_decision(self.game)
+        if decision.type == TurnType.MOVE:
+            self.progress_signal.emit(
+                f'{self.game.current_player.name} moved from {self.game.current_player.position} to {Position(decision.end.x, decision.end.y)}')
+
+            self.game.perform_move(decision.end)
+        elif decision.type == TurnType.SWAP:
+            self.progress_signal.emit(
+                f'{self.game.current_player.name} swapped Joker from {self.picked_joker} to {Position(decision.end.x, decision.end.y)}')
+
+            self.game.perform_swap(decision.start, decision.end)
+
+        self.create_grid()
+
+    def reset_game(self, mode: GameMode = GameMode.NORMAL):
         self.game = Game()
+        self.mode = mode
         self.is_move = False
         self.is_swap = False
         self.possible_clicks = []

@@ -12,7 +12,7 @@ font-family:'Courier'"""
 
 
 class OpeningScreen(QWidget):
-    def __init__(self, handle_button_click):
+    def __init__(self, handle_button_click, handle_ai_button_click):
         super().__init__()
         hbox = QHBoxLayout(self)
         layout = QVBoxLayout()
@@ -24,6 +24,7 @@ class OpeningScreen(QWidget):
 
         self.play_ai_button = QPushButton('Play with machine', self)
         self.play_ai_button.setStyleSheet(button_style)
+        self.play_ai_button.clicked.connect(handle_ai_button_click)
         layout.addWidget(self.play_button)
         layout.addWidget(self.play_ai_button)
 
