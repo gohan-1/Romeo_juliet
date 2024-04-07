@@ -8,6 +8,12 @@ from position import Position
 from turn import Turn, TurnType
 
 
+class GameMove:
+    def __init__(self, player: Player, turn: Turn) -> None:
+        self.player = player
+        self.turn = turn
+
+
 class Game:
     def __init__(self, deck: Deck = None) -> None:
         self.MATRIX_SIZE = 7
@@ -23,6 +29,7 @@ class Game:
             PlayerType.BLACK, position=self.BLACK_INITIAL_POSITION)
         self.current_player = self.red_player
         self.previous_swap_index = [Position(0, 6), Position(6, 0)]
+        self.history: list[GameMove] = []
 
     def init_board(self):
         board = [[None]*self.MATRIX_SIZE for _ in range(self.MATRIX_SIZE)]
@@ -113,10 +120,11 @@ class Game:
             selected = get_int_input_option()
         return self.perform_move(possible_moves[selected-1])
 
-    def perform_move(self, move):
-        self.update_current_player_position(move)
+    def perform_move(self, new_position: Position):
+        self.history.append(GameMove(self.current_player, Turn(
+            TurnType.MOVE, self.current_player.position, new_position)))
+        self.update_current_player_position(new_position)
         self.toggle_players()
-        self.update_counter()
         return True
 
     def list_possible_moves_for_current_player(self) -> list[Position]:
@@ -249,13 +257,6 @@ class Game:
     def update_current_player_position(self, new_position):
         self.current_player.position = new_position
 
-    def evaluate_current_player_position(self):
-        # check if current player in winning position
-        pass
-
-    def update_counter(self):
-        pass
-
     def setup_players(self):
         red_name = input("Red player's name: ")
         self.red_player.name = red_name
@@ -300,6 +301,8 @@ class Game:
             return True
 
     def perform_swap(self, joker_position, swap_position):
+        self.history.append(GameMove(self.current_player, Turn(
+            TurnType.SWAP, joker_position, swap_position)))
         self.board[joker_position.x][joker_position.y], \
             self.board[swap_position.x][swap_position.y] = \
             self.board[swap_position.x][swap_position.y], \
@@ -361,7 +364,6 @@ class Game:
                     horizontal_card, Position(current_position.x, i))
 
                 for valid_card in valid_cards:
-                    print(valid_card.x, valid_card.y)
                     if valid_card.x == current_position.x and valid_card.y == current_position.y:
                         horizontal_moves.append(
                             Position(current_position.x, i))
@@ -372,13 +374,37 @@ class Game:
 
     def generate_possible_moves(self):
         res = []
+
+        # jokers = self.get_swappable_jokers()
+        # for joker in jokers:
+        #     swaps = self.list_possible_swaps(joker)
+        #     for swap in swaps:
+        #         res.append(Turn(TurnType.SWAP, joker, swap))
         moves = self.list_possible_moves_for_current_player()
         for move in moves:
             res.append(Turn(TurnType.MOVE,
                        self.current_player.position, move))
-        jokers = self.get_swappable_jokers()
-        for joker in jokers:
-            swaps = self.list_possible_swaps(joker)
-            for swap in swaps:
-                res.append(Turn(TurnType.SWAP, joker, swap))
         return res
+
+    def get_winning_position(self):
+        return self.BLACK_INITIAL_POSITION if self.current_player == self.red_player else self.RED_INITAL_POSTION
+
+    def make_move(self, turn: Turn):
+        if turn.type == TurnType.MOVE:
+            self.perform_move(turn.end)
+        else:
+            self.perform_swap(turn.start, turn.end)
+
+    def undo_move(self):
+        game_move = self.history.pop()
+        if game_move.turn.type == TurnType.MOVE:
+            self.current_player = game_move.player
+            self.current_player.position = game_move.turn.start
+        else:
+            turn = game_move.turn
+            self.board[turn.start.x][turn.start.y], \
+                self.board[turn.end.x][turn.end.y] = \
+                self.board[turn.end.x][turn.end.y], \
+                self.board[turn.start.x][turn.start.y]
+            self.previous_swap_index = [turn.end, turn.start]
+            self.current_player = game_move.player

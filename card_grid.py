@@ -2,8 +2,11 @@ from enum import Enum
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication,  QWidget, QGridLayout, QLabel, QMessageBox
 from PyQt5.QtGui import QBrush,  QPixmap, QPainter
+from sqlite3.test.userfunctions import func
 
+from alpha_beta_pruning import AlphaBetaPruningPlayer
 from game import Game, TurnType
+from player import PlayerType
 from position import Position
 from random_ai import RandomAIPlayer
 from turn import Turn
@@ -18,7 +21,7 @@ class GameWidget(QWidget):
     progress_signal = pyqtSignal(str)
     player_signal = pyqtSignal(str)
 
-    def __init__(self, parent=None, game: Game = None, mode: GameMode = GameMode.NORMAL):
+    def __init__(self, parent=None, game: Game = None, mode: GameMode = GameMode.NORMAL, to_home_screen: func = None):
         super().__init__(parent)
 
         if game is None:
@@ -30,19 +33,21 @@ class GameWidget(QWidget):
         self.setLayout(self.grid_layout)
 
         self.game = game
-        self.ai_player = RandomAIPlayer()
+        self.ai_player = AlphaBetaPruningPlayer()
+        self.ai_player_color = PlayerType.BLACK
         self.mode = mode
         self.is_move = False
         self.is_swap = False
         self.possible_clicks = []
         self.picked_joker = None
         self.create_grid()
+        self.to_home_screen = to_home_screen
 
     def evaluate_current_player_postion(self):
         msg = QMessageBox()
         msg.setWindowTitle("Game Finished")
         msg.setStandardButtons(QMessageBox.Ok)
-        msg.buttonClicked.connect(self.reset_game)
+        msg.buttonClicked.connect(self.to_home_screen)
         if self.game.red_player.position == self.game.BLACK_INITIAL_POSITION:
             self.progress_signal.emit("RED wins")
             msg.setText("RED wins")
@@ -54,11 +59,14 @@ class GameWidget(QWidget):
         else:
             self.progress_signal.emit(
                 f"It's {self.game.current_player.name}'s turn")
-            if self.mode == GameMode.AI:
-                self.make_ai_move()
 
     def make_ai_move(self):
+        if not self.game.current_player.color == self.ai_player_color:
+            return
         decision: Turn = self.ai_player.make_decision(self.game)
+        if decision is None:
+            self.progress_signal.emit("AI cannot make a move")
+            return
         if decision.type == TurnType.MOVE:
             self.progress_signal.emit(
                 f'{self.game.current_player.name} moved from {self.game.current_player.position} to {Position(decision.end.x, decision.end.y)}')
@@ -66,11 +74,12 @@ class GameWidget(QWidget):
             self.game.perform_move(decision.end)
         elif decision.type == TurnType.SWAP:
             self.progress_signal.emit(
-                f'{self.game.current_player.name} swapped Joker from {self.picked_joker} to {Position(decision.end.x, decision.end.y)}')
+                f'{self.game.current_player.name} swapped Joker from {Position(decision.start.x, decision.start.y)} to {Position(decision.end.x, decision.end.y)}')
 
             self.game.perform_swap(decision.start, decision.end)
 
         self.create_grid()
+        self.evaluate_current_player_postion()
 
     def reset_game(self, mode: GameMode = GameMode.NORMAL):
         self.game = Game()
@@ -104,6 +113,8 @@ class GameWidget(QWidget):
             self.possible_clicks = []
             self.create_grid()
             self.evaluate_current_player_postion()
+            if self.mode == GameMode.AI:
+                self.make_ai_move()
             return
         if self.is_swap and Position(position_x, position_y) == self.picked_joker:
             self.is_move = False
@@ -121,6 +132,8 @@ class GameWidget(QWidget):
             self.possible_clicks = []
             self.create_grid()
             self.evaluate_current_player_postion()
+            if self.mode == GameMode.AI:
+                self.make_ai_move()
             return
         current_player_position = self.game.current_player.position
         if current_player_position.x == position_x and current_player_position.y == position_y:

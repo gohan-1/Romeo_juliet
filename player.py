@@ -16,3 +16,6 @@ class Player:
         self.color = color
         self.position: Position = position
         self.name = name or color.name
+
+    def __str__(self) -> str:
+        return f"{self.name} is at {self.position}"

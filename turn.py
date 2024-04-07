@@ -13,3 +13,6 @@ class Turn:
         self.type: TurnType = type
         self.start: Position = start
         self.end: Position = end
+
+    def __str__(self) -> str:
+        return f"{self.type.name} from {self.start} to {self.end}"

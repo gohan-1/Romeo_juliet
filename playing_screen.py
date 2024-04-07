@@ -37,7 +37,7 @@ class PlayingScreen(QWidget):
     def __init__(self, change_screen_click) -> None:
         super().__init__()
         main_layout = QHBoxLayout()
-        self.game_widget = GameWidget()
+        self.game_widget = GameWidget(to_home_screen=change_screen_click)
         main_layout.addWidget(self.game_widget)
         log_widget = LogWidget(
             self.game_widget, "Welcome to the game!\nClick on the Romeo to move and click to the Joker to swap. \nGood luck!\nRED plays first. ")
