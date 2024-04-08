@@ -2,6 +2,7 @@ from enum import Enum
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QApplication,  QWidget, QGridLayout, QLabel, QMessageBox
 from PyQt5.QtGui import QBrush,  QPixmap, QPainter
+from pygame import color
 from sqlite3.test.userfunctions import func
 
 from alpha_beta_pruning import AlphaBetaPruningPlayer
@@ -42,6 +43,8 @@ class GameWidget(QWidget):
         self.picked_joker = None
         self.create_grid()
         self.to_home_screen = to_home_screen
+        if self.mode == GameMode.AI and self.ai_player_color == PlayerType.RED:
+            self.make_ai_move()
 
     def evaluate_current_player_postion(self):
         msg = QMessageBox()
@@ -49,15 +52,17 @@ class GameWidget(QWidget):
         msg.setStandardButtons(QMessageBox.Ok)
         msg.buttonClicked.connect(self.to_home_screen)
         if self.game.red_player.position == self.game.BLACK_INITIAL_POSITION:
-            self.progress_signal.emit("RED wins")
+            self.progress_signal.emit(
+                "@<span style='color: red'><b>RED wins</b></span>")
             msg.setText("RED wins")
             msg.exec_()
         elif self.game.black_player.position == self.game.RED_INITAL_POSTION:
-            self.progress_signal.emit("BLACK wins")
+            self.progress_signal.emit(
+                "@<span style='color: black'><b>BLACK wins</b></span>")
             msg.setText("BLACK wins")
             msg.exec_()
         else:
-            self.progress_signal.emit(
+            self.emit_progress_signal(
                 f"It's {self.game.current_player.name}'s turn")
 
     def make_ai_move(self):
@@ -68,34 +73,45 @@ class GameWidget(QWidget):
             self.progress_signal.emit("AI cannot make a move")
             return
         if decision.type == TurnType.MOVE:
-            self.progress_signal.emit(
-                f'{self.game.current_player.name} moved from {self.game.current_player.position} to {Position(decision.end.x, decision.end.y)}')
-
-            self.game.perform_move(decision.end)
+            self.perform_move(decision.end)
         elif decision.type == TurnType.SWAP:
-            self.progress_signal.emit(
-                f'{self.game.current_player.name} swapped Joker from {Position(decision.start.x, decision.start.y)} to {Position(decision.end.x, decision.end.y)}')
-
-            self.game.perform_swap(decision.start, decision.end)
+            self.perform_swap(decision.start, decision.end)
 
         self.create_grid()
         self.evaluate_current_player_postion()
 
-    def reset_game(self, mode: GameMode = GameMode.NORMAL):
+    def reset_game(self, mode: GameMode = GameMode.NORMAL, ai_player_color: PlayerType = PlayerType.BLACK):
         self.game = Game()
         self.mode = mode
+        self.ai_player_color = ai_player_color
         self.is_move = False
         self.is_swap = False
         self.possible_clicks = []
         self.picked_joker = None
         self.player_signal.emit("a")
         self.progress_signal.emit(
-            "Welcome to the game!\nClick on the Romeo to move and click to the Joker to swap. \nGood luck!\nRED plays first. ")
+            "Welcome to the game!\nClick on the Romeo to move and click to the Joker to swap. \nGood luck!")
+        self.emit_progress_signal('RED plays first')
         self.create_grid()
+        if self.mode == GameMode.AI and self.ai_player_color == PlayerType.RED:
+            self.make_ai_move()
+
+    def emit_progress_signal(self, text, is_instruction=False):
+        if is_instruction:
+            color = 'black'
+        else:
+            color = 'red' if self.game.current_player.color == PlayerType.RED else 'blue'
+        full_string = f"<span style='color: {color}'>{text}</span>"
+        self.progress_signal.emit(full_string)
+
+    def perform_move(self, position: Position):
+        self.emit_progress_signal(
+            f'{self.game.current_player.name} moved from {self.game.current_player.position} to {position}')
+        self.game.perform_move(position)
 
     def card_clicked(self, position_x, position_y, event):
-        self.progress_signal.emit(
-            f'You clicked {self.game.board[position_x][position_y]}')
+        # self.progress_signal.emit(
+        #     f'You clicked {self.game.board[position_x][position_y]}')
 
         if self.is_move and Position(position_x, position_y) == self.game.current_player.position:
             self.is_move = False
@@ -104,10 +120,7 @@ class GameWidget(QWidget):
             self.create_grid()
             return
         if self.is_move and Position(position_x, position_y) in self.possible_clicks:
-            self.progress_signal.emit(
-                f'{self.game.current_player.name} moved from {self.game.current_player.position} to {Position(position_x, position_y)}')
-
-            self.game.perform_move(Position(position_x, position_y))
+            self.perform_move(Position(position_x, position_y))
             self.is_move = False
             self.is_swap = False
             self.possible_clicks = []
@@ -123,10 +136,8 @@ class GameWidget(QWidget):
             self.create_grid()
             return
         if self.is_swap and Position(position_x, position_y) in self.possible_clicks:
-            self.progress_signal.emit(
-                f'{self.game.current_player.name} swapped Joker from {self.picked_joker} to {Position(position_x, position_y)}')
-            self.game.perform_swap(
-                self.picked_joker, Position(position_x, position_y))
+            self.perform_swap(self.picked_joker,
+                              Position(position_x, position_y))
             self.is_move = False
             self.is_swap = False
             self.possible_clicks = []
@@ -139,7 +150,7 @@ class GameWidget(QWidget):
         if current_player_position.x == position_x and current_player_position.y == position_y:
             possible_moves = self.game.list_possible_moves_for_current_player()
             if len(possible_moves) == 0:
-                self.progress_signal.emit(
+                self.emit_progress_signal(
                     "No possible moves for the current player.")
                 self.is_move = False
                 self.is_swap = False
@@ -155,7 +166,7 @@ class GameWidget(QWidget):
             self.picked_joker = position
             possible_swaps = self.game.list_possible_swaps(position)
             if len(possible_swaps) == 0:
-                self.progress_signal.emit(
+                self.emit_progress_signal(
                     "No possible swaps for this joker.")
                 self.is_move = False
                 self.is_swap = False
@@ -169,17 +180,24 @@ class GameWidget(QWidget):
 
         self.show_message()
 
+    def perform_swap(self, joker_position, new_joker_position):
+        self.emit_progress_signal(
+            f'{self.game.current_player.name} swapped Joker from {joker_position} to {new_joker_position}')
+        self.game.perform_swap(
+            joker_position, new_joker_position)
+
     def show_message(self):
         if self.is_move:
             # show in screen
-            self.progress_signal.emit(
+            self.emit_progress_signal(
                 "Cannot move to this position. Please select highlighted card or click Romeo again to change.")
+
         elif self.is_swap:
             # show in screen
-            self.progress_signal.emit(
+            self.emit_progress_signal(
                 "This card is not swappable. Please select another card or click joker again to change.")
         else:
-            self.progress_signal.emit("Invalid click")
+            self.emit_progress_signal("Invalid click")
 
     def highlight_cards(self, positions):
         game = self.game

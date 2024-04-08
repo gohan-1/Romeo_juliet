@@ -1,7 +1,9 @@
 from PyQt5 import QtWidgets
 
 from card_grid import GameMode
+from choose_player_dialog import ChoosePlayerDialog
 from opening_screen import OpeningScreen
+from player import Player, PlayerType
 from playing_screen import PlayingScreen
 
 
@@ -21,7 +23,28 @@ class MainWindow(QtWidgets.QMainWindow):
         self.stackedWidget.setCurrentIndex(1)
 
     def switch_to_ai_game(self):
-        self.secondScreen.game_widget.reset_game(GameMode.AI)
+        dlg = QtWidgets.QMessageBox()
+        dlg.setStyleSheet("font-family:'Courier'; ")
+        dlg.setWindowTitle("Choose player")
+        dlg.setText("Choose Romeo you want to play")
+        red = dlg.addButton('Red Romeo (plays first)',
+                            QtWidgets.QMessageBox.ActionRole)
+        black = dlg.addButton('Black Romeo (plays second)',
+                              QtWidgets.QMessageBox.ActionRole)
+        red_style = "QPushButton { background-color: #B20000; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; font-size: 16px; margin: 4px 2px; }"
+        red.setStyleSheet(red_style)
+        black_style = "QPushButton { background-color: #000000; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; font-size: 16px; margin: 4px 2px;  }"
+        black.setStyleSheet(black_style)
+        dlg.setModal(False)
+        dlg.exec_()
+        if dlg.clickedButton() == red:
+            self.secondScreen.game_widget.reset_game(
+                GameMode.AI, ai_player_color=PlayerType.RED)
+        elif dlg.clickedButton() == black:
+            self.secondScreen.game_widget.reset_game(
+                GameMode.AI, ai_player_color=PlayerType.BLACK)
+        else:
+            return
         self.stackedWidget.setCurrentIndex(1)
 
     def switchToFirstScreen(self):
