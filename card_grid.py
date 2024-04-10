@@ -53,12 +53,12 @@ class GameWidget(QWidget):
         msg.buttonClicked.connect(self.to_home_screen)
         if self.game.red_player.position == self.game.BLACK_INITIAL_POSITION:
             self.progress_signal.emit(
-                "@<span style='color: red'><b>RED wins</b></span>")
+                "<span style='color: red'><b>RED wins</b></span>")
             msg.setText("RED wins")
             msg.exec_()
         elif self.game.black_player.position == self.game.RED_INITAL_POSTION:
             self.progress_signal.emit(
-                "@<span style='color: black'><b>BLACK wins</b></span>")
+                "<span style='color: black'><b>BLACK wins</b></span>")
             msg.setText("BLACK wins")
             msg.exec_()
         else:

@@ -39,10 +39,10 @@ class MainWindow(QtWidgets.QMainWindow):
         dlg.exec_()
         if dlg.clickedButton() == red:
             self.secondScreen.game_widget.reset_game(
-                GameMode.AI, ai_player_color=PlayerType.RED)
+                GameMode.AI, ai_player_color=PlayerType.BLACK)
         elif dlg.clickedButton() == black:
             self.secondScreen.game_widget.reset_game(
-                GameMode.AI, ai_player_color=PlayerType.BLACK)
+                GameMode.AI, ai_player_color=PlayerType.RED)
         else:
             return
         self.stackedWidget.setCurrentIndex(1)
