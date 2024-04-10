@@ -18,7 +18,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.stackedWidget.addWidget(self.secondScreen)
 
     def switch_to_normal_game(self):
-        self.secondScreen.game_widget.reset_game()
+        self.secondScreen.game_widget.reset_game(GameMode.NORMAL)
         self.stackedWidget.setCurrentIndex(1)
 
     def switch_to_ai_game(self):
