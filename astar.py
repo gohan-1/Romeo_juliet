@@ -1,11 +1,13 @@
 from queue import PriorityQueue
 from typing import Optional
+
+from pygame import Color
 from game import Game
 from position import Position
 from turn import Turn
 
 
-class AStarAI:
+class AStarPlayer:
     def make_decision(self, game: Game) -> Turn:
         frontier = PriorityQueue()
         start = game.current_player.position
@@ -31,8 +33,14 @@ class AStarAI:
 
         return came_from, cost_so_far
 
-    def a_star(self):
-        pass
-    
-    def heuristic(self):
-        pass
+    def heuristic(self, game: Game, current_player: Color) -> float:
+        if game.checking_winning_position():
+            # reversed as current player is toggled already
+            if game.current_player.color == current_player:
+                return -1
+            else:
+                return 1
+        if game.red_player.color == current_player:
+            return 1 - game.red_player.position.distance(game.BLACK_INITIAL_POSITION)/72
+        else:
+            return 1 - game.black_player.position.distance(game.RED_INITAL_POSTION)/72
