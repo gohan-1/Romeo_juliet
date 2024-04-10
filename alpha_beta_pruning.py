@@ -1,7 +1,5 @@
-from calendar import c
 from copy import deepcopy
 from pygame import Color
-from turtledemo.chaos import g
 from game import Game
 from turn import Turn
 
@@ -19,13 +17,16 @@ class AlphaBetaPruningPlayer:
         move = None
         if is_maximizing:
             max_eval = float('-inf')
+            best_move = None
             possible_moves = game.generate_possible_moves()
             for move in possible_moves:
                 print(game.current_player, move, 'is_maximizing', depth)
                 game.make_move(move)
                 eval, _ = self.alpha_beta_pruning(
                     game, alpha, beta, depth - 1, False, current_player)
-                max_eval = max(max_eval, eval)
+                if eval > max_eval:
+                    max_eval = eval
+                    best_move = move
                 alpha = max(alpha, eval)
                 print('alpha', alpha,  move)
                 game.undo_move()
@@ -34,9 +35,10 @@ class AlphaBetaPruningPlayer:
                     # game.toggle_players()
                     break
 
-            return max_eval, move
+            return max_eval, best_move
         else:
             min_eval = float('inf')
+            best_move = None
             possible_moves = game.generate_possible_moves()
             for move in possible_moves:
                 print(game.current_player, move, 'is_minimizing', depth)
@@ -45,7 +47,9 @@ class AlphaBetaPruningPlayer:
                 eval, _ = self.alpha_beta_pruning(
                     game, alpha, beta, depth - 1, True, current_player)
                 print(eval, 'eval')
-                min_eval = min(min_eval, eval)
+                if eval < min_eval:
+                    best_move = move
+                    min_eval = eval
                 beta = min(beta, eval)
                 print('beta', beta,  move)
                 game.undo_move()
@@ -54,7 +58,7 @@ class AlphaBetaPruningPlayer:
                     print('pruning', alpha, beta, eval, move)
                     # game.toggle_players()
                     break
-            return min_eval, move
+            return min_eval, best_move
 
     def evaluate(self, game: Game, current_player: Color) -> float:
         if game.checking_winning_position():

@@ -381,6 +381,7 @@ class Game:
         #     for swap in swaps:
         #         res.append(Turn(TurnType.SWAP, joker, swap))
         moves = self.list_possible_moves_for_current_player()
+        moves.reverse()
         for move in moves:
             res.append(Turn(TurnType.MOVE,
                        self.current_player.position, move))
