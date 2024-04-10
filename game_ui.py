@@ -1,7 +1,6 @@
 from PyQt5 import QtWidgets
 
 from game_widget import GameMode
-from choose_player_dialog import ChoosePlayerDialog
 from opening_screen import OpeningScreen
 from player import Player, PlayerType
 from playing_screen import PlayingScreen
