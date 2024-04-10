@@ -91,10 +91,12 @@ class GameWidget(QWidget):
 
         self.thread.start()
 
-    def reset_game(self, mode: GameMode = GameMode.NORMAL, ai_player_color: PlayerType = PlayerType.BLACK):
+    def reset_game(self, mode: GameMode = None, ai_player_color: PlayerType = None):
         self.game = Game()
-        self.mode = mode
-        self.ai_player_color = ai_player_color
+        if mode is not None:
+            self.mode = mode
+        if ai_player_color is not None:
+            self.ai_player_color = ai_player_color
         self.is_move = False
         self.is_swap = False
         self.possible_clicks = []
