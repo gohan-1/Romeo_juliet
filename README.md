@@ -12,7 +12,10 @@ The game has 2 modes:
 This game uses Python 3.9.
 Library: PyQt5 and colorama
 
-To install the libraries, run `pip install -r requirements.txt`
+To install the libraries
+
+- set up virtual environment
+- run `pip install -r requirements.txt`
 
 To run the console version, use this command: `python main.py`
 
