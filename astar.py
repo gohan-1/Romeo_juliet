@@ -2,6 +2,7 @@ from queue import PriorityQueue
 from typing import Optional
 
 from game import Game
+from player import PlayerType
 from position import Position
 from turn import Turn
 
@@ -32,7 +33,7 @@ class AStarPlayer:
 
         return came_from, cost_so_far
 
-    def heuristic(self, game: Game, current_player: Color) -> float:
+    def heuristic(self, game: Game, current_player: PlayerType) -> float:
         if game.checking_winning_position():
             # reversed as current player is toggled already
             if game.current_player.color == current_player:
