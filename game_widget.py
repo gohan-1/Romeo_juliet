@@ -113,7 +113,7 @@ class GameWidget(QWidget):
         if is_instruction:
             color = 'black'
         else:
-            color = 'red' if self.game.current_player.color == PlayerType.RED else 'blue'
+            color = '#C22727' if self.game.current_player.color == PlayerType.RED else '#0053AF'
         full_string = f"<span style='color: {color}'>{text}</span>"
         self.progress_signal.emit(full_string)
 
@@ -319,4 +319,5 @@ class Worker(QObject):
 
     def run(self, player, game):
         decision = player.make_decision(game)
-        self.finished.emit(decision)
+        if decision is not None:
+            self.finished.emit(decision)
