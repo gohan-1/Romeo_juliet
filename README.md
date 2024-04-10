@@ -15,6 +15,8 @@ Library: PyQt5 and colorama
 To install the libraries
 
 - set up virtual environment
+    - `python3 -m virtualenv venv -p python3.9`
+    - `source venv/bin/activate`
 - run `pip install -r requirements.txt`
 
 To run the console version, use this command: `python main.py`
