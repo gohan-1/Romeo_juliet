@@ -1,6 +1,6 @@
 # Romeo_juliet
 
-This is the implementation of the card game Romeo[https://www.parlettgames.uk/oricards/romeo.html]
+This is the implementation of [the card game Rome by David Parlett](https://www.parlettgames.uk/oricards/romeo.html)
 
 The game has 2 modes:
 
@@ -15,8 +15,8 @@ Library: PyQt5 and colorama
 To install the libraries
 
 - set up virtual environment
-    - `python3 -m virtualenv venv -p python3.9`
-    - `source venv/bin/activate`
+  - `python3 -m virtualenv venv -p python3.9`
+  - `source venv/bin/activate`
 - run `pip install -r requirements.txt`
 
 To run the console version, use this command: `python main.py`
