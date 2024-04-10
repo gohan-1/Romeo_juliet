@@ -1,7 +1,6 @@
 from queue import PriorityQueue
 from typing import Optional
 
-from pygame import Color
 from game import Game
 from position import Position
 from turn import Turn
