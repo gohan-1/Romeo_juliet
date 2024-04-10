@@ -1,9 +1,7 @@
 from enum import Enum
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtWidgets import QApplication,  QWidget, QGridLayout, QLabel, QMessageBox
+from PyQt5.QtCore import QObject, QThread, Qt, pyqtSignal
+from PyQt5.QtWidgets import QWidget, QGridLayout, QLabel, QMessageBox
 from PyQt5.QtGui import QBrush,  QPixmap, QPainter
-from pygame import color
-from sqlite3.test.userfunctions import func
 
 from alpha_beta_pruning import AlphaBetaPruningPlayer
 from game import Game, TurnType
@@ -65,20 +63,33 @@ class GameWidget(QWidget):
             self.emit_progress_signal(
                 f"It's {self.game.current_player.name}'s turn")
 
-    async def make_ai_move(self):
+    def make_ai_move(self):
         if not self.game.current_player.color == self.ai_player_color:
             return
-        decision: Turn = self.ai_player.make_decision(self.game)
-        if decision is None:
-            self.progress_signal.emit("AI cannot make a move")
-            return
-        if decision.type == TurnType.MOVE:
-            self.perform_move(decision.end)
-        elif decision.type == TurnType.SWAP:
-            self.perform_swap(decision.start, decision.end)
 
-        self.create_grid()
-        self.evaluate_current_player_postion()
+        def handle_ai_move(turn: Turn):
+            if turn is None:
+                self.progress_signal.emit("AI cannot make a move")
+                return
+            if turn.type == TurnType.MOVE:
+                self.perform_move(turn.end)
+            elif turn.type == TurnType.SWAP:
+                self.perform_swap(turn.start, turn.end)
+
+            self.create_grid()
+            self.evaluate_current_player_postion()
+
+        self.thread = QThread()
+        self.worker = Worker()
+        self.worker.moveToThread(self.thread)
+        self.thread.started.connect(
+            lambda: self.worker.run(self.ai_player, self.game))
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.worker.finished.connect(handle_ai_move)
+
+        self.thread.start()
 
     def reset_game(self, mode: GameMode = GameMode.NORMAL, ai_player_color: PlayerType = PlayerType.BLACK):
         self.game = Game()
@@ -299,3 +310,11 @@ class GameWidget(QWidget):
         painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
         painter.drawPixmap(5, 20, coin)
         painter.end()
+
+
+class Worker(QObject):
+    finished = pyqtSignal(Turn)
+
+    def run(self, player, game):
+        decision = player.make_decision(game)
+        self.finished.emit(decision)

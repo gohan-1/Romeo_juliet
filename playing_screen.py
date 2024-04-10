@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QTextEdit, QVBoxLayout, QWidget, QPushButton
 
-from card_grid import GameWidget
+from game_widget import GameWidget
 
 button_style = """background: rgba(255, 255, 255, 1); 
 color: #000; 

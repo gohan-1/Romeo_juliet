@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets
 
-from card_grid import GameMode
+from game_widget import GameMode
 from choose_player_dialog import ChoosePlayerDialog
 from opening_screen import OpeningScreen
 from player import Player, PlayerType
