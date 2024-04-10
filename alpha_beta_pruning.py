@@ -1,6 +1,6 @@
 from copy import deepcopy
-from pygame import Color
 from game import Game
+from player import PlayerType
 from turn import Turn
 
 
@@ -11,7 +11,7 @@ class AlphaBetaPruningPlayer:
                                           float('inf'), 5, True, game.current_player.color)
         return move
 
-    def alpha_beta_pruning(self, game: Game, alpha: float, beta: float, depth: int, is_maximizing: bool, current_player: Color):
+    def alpha_beta_pruning(self, game: Game, alpha: float, beta: float, depth: int, is_maximizing: bool, current_player: PlayerType):
         if depth == 0 or game.checking_winning_position():
             return self.evaluate(game, current_player), None
         move = None
@@ -49,7 +49,7 @@ class AlphaBetaPruningPlayer:
                     break
             return min_eval, best_move
 
-    def evaluate(self, game: Game, current_player: Color) -> float:
+    def evaluate(self, game: Game, current_player: PlayerType) -> float:
         if game.checking_winning_position():
             # reversed as current player is toggled already
             if game.current_player.color == current_player:
