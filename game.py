@@ -374,17 +374,16 @@ class Game:
 
     def generate_possible_moves(self):
         res = []
-
-        # jokers = self.get_swappable_jokers()
-        # for joker in jokers:
-        #     swaps = self.list_possible_swaps(joker)
-        #     for swap in swaps:
-        #         res.append(Turn(TurnType.SWAP, joker, swap))
         moves = self.list_possible_moves_for_current_player()
-        moves.reverse()
         for move in moves:
             res.append(Turn(TurnType.MOVE,
                        self.current_player.position, move))
+        jokers = self.get_swappable_jokers()
+        for joker in jokers:
+            swaps = self.list_possible_swaps(joker)
+            for swap in swaps:
+                res.append(Turn(TurnType.SWAP, joker, swap))
+
         return res
 
     def get_winning_position(self):

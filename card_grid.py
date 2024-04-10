@@ -1,5 +1,5 @@
 from enum import Enum
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QApplication,  QWidget, QGridLayout, QLabel, QMessageBox
 from PyQt5.QtGui import QBrush,  QPixmap, QPainter
 from pygame import color
@@ -65,7 +65,7 @@ class GameWidget(QWidget):
             self.emit_progress_signal(
                 f"It's {self.game.current_player.name}'s turn")
 
-    def make_ai_move(self):
+    async def make_ai_move(self):
         if not self.game.current_player.color == self.ai_player_color:
             return
         decision: Turn = self.ai_player.make_decision(self.game)

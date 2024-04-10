@@ -20,7 +20,6 @@ class AlphaBetaPruningPlayer:
             best_move = None
             possible_moves = game.generate_possible_moves()
             for move in possible_moves:
-                print(game.current_player, move, 'is_maximizing', depth)
                 game.make_move(move)
                 eval, _ = self.alpha_beta_pruning(
                     game, alpha, beta, depth - 1, False, current_player)
@@ -28,11 +27,8 @@ class AlphaBetaPruningPlayer:
                     max_eval = eval
                     best_move = move
                 alpha = max(alpha, eval)
-                print('alpha', alpha,  move)
                 game.undo_move()
                 if alpha >= beta:
-                    print('pruning', alpha, beta, eval, move)
-                    # game.toggle_players()
                     break
 
             return max_eval, best_move
@@ -41,22 +37,15 @@ class AlphaBetaPruningPlayer:
             best_move = None
             possible_moves = game.generate_possible_moves()
             for move in possible_moves:
-                print(game.current_player, move, 'is_minimizing', depth)
-
                 game.make_move(move)
                 eval, _ = self.alpha_beta_pruning(
                     game, alpha, beta, depth - 1, True, current_player)
-                print(eval, 'eval')
                 if eval < min_eval:
                     best_move = move
                     min_eval = eval
                 beta = min(beta, eval)
-                print('beta', beta,  move)
                 game.undo_move()
-
                 if alpha >= beta:
-                    print('pruning', alpha, beta, eval, move)
-                    # game.toggle_players()
                     break
             return min_eval, best_move
 
@@ -68,8 +57,6 @@ class AlphaBetaPruningPlayer:
             else:
                 return 1
         if game.red_player.color == current_player:
-            print(game.red_player.position, game.BLACK_INITIAL_POSITION)
-            return 1 - game.red_player.position.distance(game.RED_INITAL_POSTION)/72
+            return 1 - game.red_player.position.distance(game.BLACK_INITIAL_POSITION)/72
         else:
-            print(game.black_player.position, game.RED_INITAL_POSTION)
             return 1 - game.black_player.position.distance(game.RED_INITAL_POSTION)/72
