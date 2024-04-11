@@ -20,11 +20,7 @@ class GameWidget(QWidget):
     progress_signal = pyqtSignal(str)
     player_signal = pyqtSignal(str)
 
-<<<<<<< HEAD
     def __init__(self, parent=None, game: Game = None, mode: GameMode = GameMode.NORMAL, to_home_screen=None):
-=======
-    def __init__(self, parent=None, game: Game = None, mode: GameMode = GameMode.NORMAL, to_home_screen = None):
->>>>>>> 711f7b9 (bug fix in game_grid)
         super().__init__(parent)
 
         if game is None:
